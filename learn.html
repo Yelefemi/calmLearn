@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CalmLearn | Learn Gently</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --base-font-size: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    html {
+      font-size: var(--base-font-size);
+    }
+
+    body {
+      background: #f7fbff;
+      color: #333;
+    }
+
+   /* ================= NAVBAR (GLASS) ================= */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.35);
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      z-index: 1000;
+    }
+
+    nav .logo {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #0b5ed7;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 25px;
+      list-style: none;
+      align-items: center;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #333;
+      font-size: 0.95rem;
+    }
+
+    nav ul li a:hover {
+      color: #0b5ed7;
+    }
+
+    nav button {
+      background: #000;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+     /* ================= ACCESSIBILITY PANEL ================= */
+    #accessibilityPanel {
+      position: fixed;
+      top: 80px;
+      right: 30px;
+      width: 240px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      padding: 20px;
+      display: none;
+      z-index: 1001;
+    }
+
+    #accessibilityPanel h4 {
+      margin-bottom: 15px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .toggle-row input {
+      transform: scale(1.3);
+      cursor: pointer;
+    }
+
+    #fontSlider {
+      width: 100%;
+      cursor: pointer;
+    }
+
+    /* CONTENT */
+    .container {
+      max-width: 850px;
+      margin: auto;
+      padding: 140px 20px 60px;
+    }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .intro h1 {
+      font-size: 2.3rem;
+      color: #0b5ed7;
+      margin-bottom: 10px;
+    }
+
+    .intro p {
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    /* LEARNING STEP */
+    .step {
+      background: #fff;
+      padding: 35px;
+      border-radius: 22px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+      display: none;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .step h2 {
+      color: #28a745;
+      margin-bottom: 15px;
+    }
+
+    .step p {
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .image-box {
+      margin-top: 20px;
+      background: #eaf6ff;
+      padding: 25px;
+      border-radius: 18px;
+      text-align: center;
+      font-size: 4rem;
+    }
+
+    .hint {
+      display: none;
+      background: #f1f8ff;
+      padding: 15px;
+      margin-top: 15px;
+      border-left: 4px solid #0b5ed7;
+      font-size: 0.95rem;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      padding: 12px 26px;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .next-btn {
+      background: #28a745;
+      color: #fff;
+    }
+
+    .hint-btn {
+      background: #fff;
+      border: 2px solid #0b5ed7;
+      color: #0b5ed7;
+    }
+
+    .finish-btn {
+      display: block;
+      margin: 40px auto;
+      padding: 16px 45px;
+      background: #0b5ed7;
+      color: #fff;
+      font-size: 1.1rem;
+      border-radius: 30px;
+    }
+
+    body.accessible * {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo">🌿 CalmLearn</div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="experiment.html">Experiment</a></li>
+    <!-- <li><a href="learn.html">Learn</a></li>
+    <li><a href="textbook.html">Learn</a></li> -->
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="results.html">Results</a></li>
+  </ul>
+  <button id="accessBtn">♿ Accessibility</button>
+</nav>
+<div id="accessibilityPanel">
+  <div class="toggle-row">
+    <label>Accessibility</label>
+    <input type="checkbox" id="accessToggle">
+  </div>
+  <label>Text Size</label>
+  <input type="range" id="fontSlider" min="14" max="22" value="16">
+</div>
+
+<div class="container">
+
+  <div class="intro">
+    <h1>Photosynthesis</h1>
+    <p>
+      Take your time 🌱  
+      Read slowly, understand clearly, and move forward only when you feel ready.
+    </p>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step active">
+    <h2>Step 1: What is Photosynthesis?</h2>
+    <p>
+      Photosynthesis is how green plants make their own food using sunlight.
+    </p>
+    <div class="image-box">☀️🌿</div>
+
+    <div class="hint">
+      Plants use sunlight as energy to prepare food.
+    </div>
+
+    <div class="controls">
+      <button class="hint-btn" onclick="toggleHint(this)">Need a hint?</button>
+      <button class="next-btn" onclick="nextStep()">Next</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <h2>Step 2: What Do Plants Need?</h2>
+    <p>
+      Plants need sunlight, water, and carbon dioxide to make food.
+    </p>
+    <div class="image-box">💧🌬️☀️</div>
+
+    <div class="hint">
+      These materials come from air, soil, and the sun.
+    </div>
+
+    <div class="controls">
+      <button class="hint-btn" onclick="toggleHint(this)">Need a hint?</button>
+      <button class="next-btn" onclick="nextStep()">Next</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <h2>Step 3: Why Is It Important?</h2>
+    <p>
+      Photosynthesis provides food for plants and oxygen for living things.
+    </p>
+    <div class="image-box">🌍❤️</div>
+
+    <div class="hint">
+      Without photosynthesis, humans and animals cannot survive.
+    </div>
+    <div class="controls">
+      <button class="hint-btn" onclick="toggleHint(this)">Need a hint?</button>
+      <button class="next-btn" onclick="nextStep()">Next</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <h2>Step 4: Sugar Power!</h2>
+    <p>
+      The food plants make is actually sugar. The leaves store it and send it down to the
+      roots, stems and fruits to help the whole plant grow big and strong.
+    </p>
+    <div class="image-box">🍬🌿➡️🍎</div>
+
+    <div class="hint">
+      That sugar is what makes fruits sweet and gives you energy when you eat them!
+    </div>
+
+    <div class="controls">
+      <button class="hint-btn" onclick="toggleHint(this)">Need a hint?</button>
+      <button class="next-btn" onclick="nextStep()">Next</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step">
+    <h2>Step 5: Trees Are Earth’s Helpers</h2>
+    <p>
+      When plants breathe out the extra oxygen, animals and humans use it to breathe in.
+      That’s why forests and grasslands help keep air clean and fresh.
+    </p>
+    <div class="image-box">🌳🌲➡️😌</div>
+
+    <div class="hint">
+      Think of plants as giant green air‑filters that never need cleaning!
+    </div>
+
+    <button class="finish-btn" onclick="finishReading()">I’m Ready for the Quiz</button>
+  </div>
+
+</div>
+
+<script>
+  let startTime = Date.now();
+  let currentStep = 0;
+  const steps = document.querySelectorAll(".step");
+
+  function nextStep() {
+    steps[currentStep].classList.remove("active");
+    currentStep++;
+    steps[currentStep].classList.add("active");
+  }
+
+  function toggleHint(btn) {
+    const hint = btn.parentElement.previousElementSibling;
+    hint.style.display = hint.style.display === "block" ? "none" : "block";
+  }
+
+  function finishReading() {
+    const readingTime = Math.floor((Date.now() - startTime) / 1000);
+    localStorage.setItem("readingTimeCalmLearn", readingTime);
+    window.location.href = "quiz.html";
+  }
+
+  const accessBtn = document.getElementById("accessBtn");
+  const panel = document.getElementById("accessibilityPanel");
+  const toggle = document.getElementById("accessToggle");
+  const slider = document.getElementById("fontSlider");
+
+  accessBtn.onclick = () => {
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+  };
+
+  toggle.onchange = () => {
+    document.body.classList.toggle("accessible", toggle.checked);
+    localStorage.setItem("accessible", toggle.checked);
+  };
+
+  slider.oninput = () => {
+    document.documentElement.style.setProperty("--base-font-size", slider.value + "px");
+    localStorage.setItem("fontSize", slider.value);
+  };
+
+  window.onload = () => {
+    if (localStorage.getItem("accessible") === "true") {
+      document.body.classList.add("accessible");
+      toggle.checked = true;
+    }
+    const savedFont = localStorage.getItem("fontSize");
+    if (savedFont) {
+      document.documentElement.style.setProperty("--base-font-size", savedFont + "px");
+      slider.value = savedFont;
+    }
+  };
+</script>
+
+</body>
+</html>

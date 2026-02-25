@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CalmLearn | Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #f7fbff;
+      color: #333;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 15px 40px;
+      backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.4);
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    nav h2 {
+      color: #0b5ed7;
+    }
+
+    .timer {
+      color: red;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: auto;
+      padding: 140px 20px 60px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #0b5ed7;
+    }
+
+    .question {
+      background: #fff;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .question h3 {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      display: block;
+      margin: 40px auto;
+      padding: 16px 45px;
+      border-radius: 30px;
+      border: none;
+      background: #28a745;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <h2>📝 CalmLearn Quiz</h2>
+  <div class="timer">⏱ Time Left: <span id="time">05:00</span></div>
+</nav>
+
+<div class="container">
+  <h1>Photosynthesis Quiz</h1>
+
+  <form id="quizForm">
+
+    <div class="question">
+      <h3>1. What is photosynthesis?</h3>
+      <label><input type="radio" name="q1" value="a"> A way plants breathe</label>
+      <label><input type="radio" name="q1" value="b"> How plants make food</label>
+      <label><input type="radio" name="q1" value="c"> How animals eat</label>
+    </div>
+
+    <div class="question">
+      <h3>2. Which of these is needed for photosynthesis?</h3>
+      <label><input type="radio" name="q2" value="a"> Sunlight</label>
+      <label><input type="radio" name="q2" value="b"> Meat</label>
+      <label><input type="radio" name="q2" value="c"> Plastic</label>
+    </div>
+
+    <div class="question">
+      <h3>3. What gas is released during photosynthesis?</h3>
+      <label><input type="radio" name="q3" value="a"> Carbon dioxide</label>
+      <label><input type="radio" name="q3" value="b"> Oxygen</label>
+      <label><input type="radio" name="q3" value="c"> Nitrogen</label>
+    </div>
+
+    <div class="question">
+      <h3>4. Where in the plant does photosynthesis mainly occur?</h3>
+      <label><input type="radio" name="q4" value="a"> Roots</label>
+      <label><input type="radio" name="q4" value="b"> Leaves</label>
+      <label><input type="radio" name="q4" value="c"> Stem</label>
+    </div>
+
+    <div class="question">
+      <h3>5. Which pigment gives leaves their green color?</h3>
+      <label><input type="radio" name="q5" value="a"> Hemoglobin</label>
+      <label><input type="radio" name="q5" value="b"> Chlorophyll</label>
+      <label><input type="radio" name="q5" value="c"> Melanin</label>
+    </div>
+
+    <div class="question">
+      <h3>6. What do plants take in from the soil?</h3>
+      <label><input type="radio" name="q6" value="a"> Carbon dioxide</label>
+      <label><input type="radio" name="q6" value="b"> Water</label>
+      <label><input type="radio" name="q6" value="c"> Oxygen</label>
+    </div>
+
+    <div class="question">
+      <h3>7. Which of the following is NOT needed for photosynthesis?</h3>
+      <label><input type="radio" name="q7" value="a"> Sunlight</label>
+      <label><input type="radio" name="q7" value="b"> Soil</label>
+      <label><input type="radio" name="q7" value="c"> Carbon dioxide</label>
+    </div>
+
+    <div class="question">
+      <h3>8. What happens to extra sugar made in photosynthesis?</h3>
+      <label><input type="radio" name="q8" value="a"> It is stored in the plant</label>
+      <label><input type="radio" name="q8" value="b"> It turns into water</label>
+      <label><input type="radio" name="q8" value="c"> It disappears</label>
+    </div>
+
+    <div class="question">
+      <h3>9. Which organisms benefit directly from the oxygen released?</h3>
+      <label><input type="radio" name="q9" value="a"> Plants</label>
+      <label><input type="radio" name="q9" value="b"> Animals</label>
+      <label><input type="radio" name="q9" value="c"> Both plants and animals</label>
+    </div>
+
+    <div class="question">
+      <h3>10. Why are plants sometimes called "lungs of the planet"?</h3>
+      <label><input type="radio" name="q10" value="a"> They breathe in carbon dioxide and out oxygen</label>
+      <label><input type="radio" name="q10" value="b"> They produce smoke</label>
+      <label><input type="radio" name="q10" value="c"> They make air indoors</label>
+    </div>
+
+
+    <button type="button" class="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
+
+  </form>
+</div>
+
+<script>
+  let time = 300; // 5 minutes
+  const timerEl = document.getElementById("time");
+  const quizStart = Date.now();
+
+  const answers = {
+    q1: "b",
+    q2: "a",
+    q3: "b"
+  };
+
+  // additional answers for extended quiz
+  answers.q4 = "b"; // leaves
+  answers.q5 = "b"; // chlorophyll
+  answers.q6 = "b"; // water
+  answers.q7 = "b"; // soil is not needed directly
+  answers.q8 = "a"; // stored in plant
+  answers.q9 = "b"; // animals (though plants also use it)
+  answers.q10 = "a"; // they exchange gases like lungs
+
+  const countdown = setInterval(() => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    timerEl.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+
+    if (time <= 0) {
+      clearInterval(countdown);
+      submitQuiz();
+    }
+    time--;
+  }, 1000);
+
+  function submitQuiz(){
+
+  // 1️⃣ Calculate Score
+  let score = calculateScore(); 
+
+  // record total number of questions for any summary pages
+  localStorage.setItem("quizTotal", Object.keys(answers).length);
+
+  // fall back to learningMethod if selectedMethod isn't used
+  let method = localStorage.getItem("selectedMethod") || localStorage.getItem("learningMethod");
+
+  if(method === "textbook"){
+    localStorage.setItem("textbookScore", score);
+  } else {
+    localStorage.setItem("calmScore", score);
+  }
+
+  // 2️⃣ Calculate Time
+  let endTime = Date.now();
+  let startTime = localStorage.getItem("startTime");
+  let totalTime = Math.floor((endTime - startTime) / 1000);
+
+  if(method === "textbook"){
+    localStorage.setItem("textbookTime", totalTime);
+  } else {
+    localStorage.setItem("calmTime", totalTime);
+  }
+
+
+  // 5️⃣ Redirect to feedback page for post-quiz survey
+  window.location.href = "feedback.html";
+}
+
+  // simple scorer that reads each answer key and checks the selected radio
+  function calculateScore() {
+    let total = 0;
+    for (const q in answers) {
+      const selected = document.querySelector(`input[name="${q}"]:checked`);
+      if (selected && selected.value === answers[q]) {
+        total++;
+      }
+    }
+    return total;
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CalmLearn | Learn Without Pressure</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --base-font-size: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    html {
+      font-size: var(--base-font-size);
+    }
+
+    body {
+      background: #f7fbff;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    /* ================= NAVBAR (GLASS) ================= */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.35);
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      z-index: 1000;
+    }
+
+    nav .logo {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #0b5ed7;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 25px;
+      list-style: none;
+      align-items: center;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #333;
+      font-size: 0.95rem;
+    }
+
+    nav ul li a:hover {
+      color: #0b5ed7;
+    }
+
+    nav button {
+      background: #000;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    /* ================= ACCESSIBILITY PANEL ================= */
+    #accessibilityPanel {
+      position: fixed;
+      top: 80px;
+      right: 30px;
+      width: 240px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      padding: 20px;
+      display: none;
+      z-index: 1001;
+    }
+
+    #accessibilityPanel h4 {
+      margin-bottom: 15px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .toggle-row input {
+      transform: scale(1.3);
+      cursor: pointer;
+    }
+
+    #fontSlider {
+      width: 100%;
+      cursor: pointer;
+    }
+
+    /* ================= HERO ================= */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #b8e7ff, #e6f7ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 20px 40px;
+    }
+
+    .hero-content {
+      max-width: 1000px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    .hero-text h1 {
+      font-size: 3rem;
+      color: #0b5ed7;
+      margin-bottom: 15px;
+    }
+
+    .hero-text h1 span {
+      color: #28a745;
+    }
+
+    .hero-text p {
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .hero-buttons button {
+      padding: 14px 26px;
+      font-size: 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-right: 15px;
+      border: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .start-btn {
+      background: #28a745;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(40,167,69,0.3);
+    }
+
+    .learn-btn {
+      background: #fff;
+      color: #0b5ed7;
+      border: 2px solid #0b5ed7;
+    }
+
+    .hero-buttons button:hover {
+      transform: translateY(-5px);
+    }
+
+    /* ================= BUBBLES ================= */
+    .hero-illustration {
+      position: relative;
+      height: 300px;
+    }
+
+    .bubble {
+      width: 140px;
+      height: 140px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: absolute;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .bubble.one { top: 20px; left: 40px; }
+    .bubble.two { top: 180px; left: 200px; animation-delay: 1s; }
+    .bubble.three { top: 40px; right: 20px; animation-delay: 2s; }
+
+    /* ================= SECTIONS ================= */
+    section {
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    section h2 {
+      font-size: 2.2rem;
+      color: #0b5ed7;
+      margin-bottom: 20px;
+    }
+
+    section p {
+      max-width: 700px;
+      margin: auto;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    /* ================= FEATURES ================= */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin-top: 40px;
+    }
+
+    .feature-card {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .feature-card span {
+      font-size: 2.5rem;
+    }
+
+    /* ================= ACCESSIBILITY MODE ================= */
+    body.accessible {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    body.accessible * {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    /* ================= FOOTER ================= */
+    footer {
+      background: #0b5ed7;
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+
+    /* ================= ANIMATIONS ================= */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      nav ul {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo">🌿 CalmLearn</div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="experiment.html">Experiment</a></li>
+    <!-- <li><a href="learn.html">Learn</a></li> -->
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="results.html">Results</a></li>
+  </ul>
+  <button id="accessBtn">♿ Accessibility</button>
+</nav>
+
+<!-- ACCESSIBILITY PANEL -->
+<div id="accessibilityPanel">
+  <h4>Accessibility</h4>
+
+  <div class="toggle-row">
+    <label for="accessToggle">Enable</label>
+    <input type="checkbox" id="accessToggle">
+  </div>
+
+  <label for="fontSlider">Text Size</label>
+  <input type="range" id="fontSlider" min="14" max="22" value="16">
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+
+    <div class="hero-text">
+      <h1>Welcome to <span>CalmLearn</span> 🌿</h1>
+      <p>
+        Learning doesn’t have to be stressful.  
+        CalmLearn helps students understand better, feel calmer, and learn at their own pace.
+      </p>
+
+      <div class="hero-buttons">
+        <button class="start-btn" onclick="startExperiment()">Start Experiment</button>
+        <button class="learn-btn">Learn More</button>
+      </div>
+    </div>
+
+    <div class="hero-illustration">
+      <div class="bubble one">😊</div>
+      <div class="bubble two">📘</div>
+      <div class="bubble three">⏱️</div>
+    </div>
+
+  </div>
+</div>
+
+<section>
+  <h2>Why CalmLearn?</h2>
+  <p>
+    Many students feel pressured by fast lessons and timed tests.
+    CalmLearn creates a safe learning space where understanding matters more than speed.
+  </p>
+</section>
+
+<section>
+  <h2>How CalmLearn Helps</h2>
+  <div class="features">
+    <div class="feature-card"><span>🐢</span><h3>Learn at Your Pace</h3><p>No rushing.</p></div>
+    <div class="feature-card"><span>🧠</span><h3>Clear Explanations</h3><p>Simple and visual.</p></div>
+    <div class="feature-card"><span>💚</span><h3>Low Stress</h3><p>Safe learning space.</p></div>
+    <div class="feature-card"><span>📊</span><h3>Track Progress</h3><p>No ranking.</p></div>
+  </div>
+</section>
+
+<footer>
+  CalmLearn © 2026 • Learning Without Pressure
+</footer>
+
+<script>
+  const accessBtn = document.getElementById("accessBtn");
+  const panel = document.getElementById("accessibilityPanel");
+  const toggle = document.getElementById("accessToggle");
+  const slider = document.getElementById("fontSlider");
+
+  accessBtn.onclick = () => {
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+  };
+
+  toggle.onchange = () => {
+    document.body.classList.toggle("accessible", toggle.checked);
+    localStorage.setItem("accessible", toggle.checked);
+  };
+
+  slider.oninput = () => {
+    document.documentElement.style.setProperty(
+      "--base-font-size",
+      slider.value + "px"
+    );
+    localStorage.setItem("fontSize", slider.value);
+  };
+
+  window.onload = () => {
+    if (localStorage.getItem("accessible") === "true") {
+      document.body.classList.add("accessible");
+      toggle.checked = true;
+    }
+    const savedFont = localStorage.getItem("fontSize");
+    if (savedFont) {
+      document.documentElement.style.setProperty("--base-font-size", savedFont + "px");
+      slider.value = savedFont;
+    }
+  };
+
+  function startExperiment() {
+    // navigate to pretest so the user can set baseline measures
+    window.location.href = "pretest.html";
+  }
+</script>
+
+</body>
+</html>

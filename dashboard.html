@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CalmLearn | Experiment Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family:Poppins, sans-serif;
+  background:linear-gradient(135deg,#eaf6ff,#f7fbff);
+  padding:40px;
+  text-align:center;
+}
+
+/* ================= NAVBAR (GLASS) ================= */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  z-index: 1000;
+}
+
+nav .logo {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #0b5ed7;
+}
+
+nav ul {
+  display: flex;
+  gap: 25px;
+  list-style: none;
+  align-items: center;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+nav ul li a:hover {
+  color: #0b5ed7;
+}
+
+nav button {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* ================= ACCESSIBILITY PANEL ================= */
+#accessibilityPanel {
+  position: fixed;
+  top: 80px;
+  right: 30px;
+  width: 240px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  padding: 20px;
+  display: none;
+  z-index: 1001;
+}
+
+#accessibilityPanel h4 {
+  margin-bottom: 15px;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.toggle-row input {
+  transform: scale(1.3);
+  cursor: pointer;
+}
+
+#fontSlider {
+  width: 100%;
+  cursor: pointer;
+}
+
+h1{
+  color:#0b5ed7;
+  margin-bottom:10px;
+}
+
+.section{
+  margin:40px 0;
+}
+
+.bar-container{
+  width:350px;
+  margin:15px auto;
+}
+
+.bar{
+  height:35px;
+  border-radius:20px;
+  margin:10px 0;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.9rem;
+}
+
+.textbook{
+  background:#dc3545;
+}
+
+.calm{
+  background:#28a745;
+}
+
+.result-box{
+  margin-top:30px;
+  font-size:1.1rem;
+  font-weight:600;
+  color:#0b5ed7;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo">🌿 CalmLearn</div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="experiment.html">Experiment</a></li>
+    <!-- <li><a href="learn.html">Learn</a></li> -->
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="results.html">Results</a></li>
+  </ul>
+  <button id="accessBtn">♿ Accessibility</button>
+</nav>
+
+<!-- ACCESSIBILITY PANEL -->
+<div id="accessibilityPanel">
+  <h4>Accessibility</h4>
+
+  <div class="toggle-row">
+    <label for="accessToggle">Enable</label>
+    <input type="checkbox" id="accessToggle">
+  </div>
+
+  <label for="fontSlider">Text Size</label>
+  <input type="range" id="fontSlider" min="14" max="22" value="16">
+</div>
+
+<h1>📊 CalmLearn Experiment Results</h1>
+
+<div class="section">
+  <h2>Performance (Score)</h2>
+  <div class="bar-container">
+    <div id="textbookScoreBar" class="bar textbook"></div>
+    <div id="calmScoreBar" class="bar calm"></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Efficiency (Time in Seconds)</h2>
+  <div class="bar-container">
+    <div id="textbookTimeBar" class="bar textbook"></div>
+    <div id="calmTimeBar" class="bar calm"></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Stress Reduction</h2>
+  <div class="bar-container">
+    <div id="textbookStressBar" class="bar textbook"></div>
+    <div id="calmStressBar" class="bar calm"></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Confidence Increase</h2>
+  <div class="bar-container">
+    <div id="textbookConfidenceBar" class="bar textbook"></div>
+    <div id="calmConfidenceBar" class="bar calm"></div>
+  </div>
+</div>
+
+<div class="result-box" id="overallResult"></div>
+
+<script>
+
+const accessBtn = document.getElementById("accessBtn");
+const panel = document.getElementById("accessibilityPanel");
+const toggle = document.getElementById("accessToggle");
+const slider = document.getElementById("fontSlider");
+
+accessBtn.onclick = () => {
+  panel.style.display = panel.style.display === "block" ? "none" : "block";
+};
+
+toggle.onchange = () => {
+  document.body.classList.toggle("accessible", toggle.checked);
+  localStorage.setItem("accessible", toggle.checked);
+};
+
+slider.oninput = () => {
+  document.documentElement.style.setProperty(
+    "--base-font-size",
+    slider.value + "px"
+  );
+  localStorage.setItem("fontSize", slider.value);
+};
+
+window.onload = () => {
+  if (localStorage.getItem("accessible") === "true") {
+    document.body.classList.add("accessible");
+    toggle.checked = true;
+  }
+  const savedFont = localStorage.getItem("fontSize");
+  if (savedFont) {
+    document.documentElement.style.setProperty("--base-font-size", savedFont + "px");
+    slider.value = savedFont;
+  }
+};
+
+// GET VALUES
+let textbookScore = parseInt(localStorage.getItem("textbookScore")) || 0;
+let calmScore = parseInt(localStorage.getItem("calmScore")) || 0;
+
+let textbookTime = parseInt(localStorage.getItem("textbookTime")) || 0;
+let calmTime = parseInt(localStorage.getItem("calmTime")) || 0;
+
+let textbookPreStress = parseInt(localStorage.getItem("textbookPreStress")) || 0;
+let textbookPostStress = parseInt(localStorage.getItem("textbookPostStress")) || 0;
+let calmPreStress = parseInt(localStorage.getItem("preStress")) || 0;
+let calmPostStress = parseInt(localStorage.getItem("calmPostStress")) || 0;
+
+let baselineConfidence = parseInt(localStorage.getItem("baselineConfidence")) || 0;
+let textbookPostConfidence = parseInt(localStorage.getItem("textbookPostConfidence")) || 0;
+let calmPostConfidence = parseInt(localStorage.getItem("calmPostConfidence")) || 0;
+
+// CALCULATIONS
+let textbookStressChange = textbookPreStress - textbookPostStress;
+let calmStressChange = calmPreStress - calmPostStress;
+
+let textbookConfidenceChange = textbookPostConfidence - baselineConfidence;
+let calmConfidenceChange = calmPostConfidence - baselineConfidence;
+
+// DISPLAY BARS
+function setBar(id, value, scale=20){
+  document.getElementById(id).style.width = (value*scale) + "px";
+  document.getElementById(id).innerText = value;
+}
+
+// Score (scale 25px per mark)
+setBar("textbookScoreBar", textbookScore, 25);
+setBar("calmScoreBar", calmScore, 25);
+
+// Time (smaller is better → invert visually)
+setBar("textbookTimeBar", textbookTime, 2);
+setBar("calmTimeBar", calmTime, 2);
+
+// Stress
+setBar("textbookStressBar", textbookStressChange, 40);
+setBar("calmStressBar", calmStressChange, 40);
+
+// Confidence
+setBar("textbookConfidenceBar", textbookConfidenceChange, 40);
+setBar("calmConfidenceBar", calmConfidenceChange, 40);
+
+// OVERALL COMPARISON LOGIC
+let calmWins = 0;
+let textbookWins = 0;
+
+if(calmScore > textbookScore) calmWins++; else textbookWins++;
+if(calmTime < textbookTime) calmWins++; else textbookWins++;
+if(calmStressChange > textbookStressChange) calmWins++; else textbookWins++;
+if(calmConfidenceChange > textbookConfidenceChange) calmWins++; else textbookWins++;
+
+let result;
+
+if(calmWins > textbookWins){
+  result = "🌿 CalmLearn outperformed the Textbook method overall.";
+}
+else if(textbookWins > calmWins){
+  result = "📘 Textbook method performed better overall.";
+}
+else{
+  result = "Both methods performed equally overall.";
+}
+
+document.getElementById("overallResult").innerText = result;
+
+</script>
+
+</body>
+</html>
