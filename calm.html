@@ -2,320 +2,74 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CalmLearn | Relax & Reset</title>
+<title>CalmLearn | Calm Reset</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Poppins', sans-serif;
-}
-
-body{
-  height:100vh;
-  background:linear-gradient(135deg,#eaf6ff,#f7fbff);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  overflow:hidden;
-}
-
-/* ================= NAVBAR (GLASS) ================= */
-nav {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  padding: 15px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  backdrop-filter: blur(14px);
-  background: rgba(255, 255, 255, 0.35);
-  border-bottom: 1px solid rgba(255,255,255,0.4);
-  z-index: 1000;
-}
-
-nav .logo {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #0b5ed7;
-}
-
-nav ul {
-  display: flex;
-  gap: 25px;
-  list-style: none;
-  align-items: center;
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: #333;
-  font-size: 0.95rem;
-}
-
-nav ul li a:hover {
-  color: #0b5ed7;
-}
-
-nav button {
-  background: #000;
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
-/* ================= ACCESSIBILITY PANEL ================= */
-#accessibilityPanel {
-  position: fixed;
-  top: 80px;
-  right: 30px;
-  width: 240px;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-  padding: 20px;
-  display: none;
-  z-index: 1001;
-}
-
-#accessibilityPanel h4 {
-  margin-bottom: 15px;
-}
-
-.toggle-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.toggle-row input {
-  transform: scale(1.3);
-  cursor: pointer;
-}
-
-#fontSlider {
-  width: 100%;
-  cursor: pointer;
-}
-
-h1{
-  color:#0b5ed7;
-  margin-bottom:10px;
-}
-
-p{
-  color:#333;
-  margin-bottom:25px;
-}
-
-/* Stress Scale */
-.scale{
-  margin:15px 0 30px;
-}
-
-.scale button{
-  margin:5px;
-  padding:10px 15px;
-  border-radius:50%;
-  border:none;
-  background:#0b5ed7;
-  color:#fff;
-  cursor:pointer;
-}
-
-.scale button.selected{
-  background:#28a745;
-}
-
-/* Breathing Circle */
-.breath-container{
-  position:relative;
-  width:220px;
-  height:220px;
-  margin-bottom:30px;
-}
-
-.circle{
-  width:100%;
-  height:100%;
-  border-radius:50%;
-  background:radial-gradient(circle,#28a745,#0b5ed7);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-size:1.2rem;
-  animation:breath 12s ease-in-out infinite;
-}
-
-@keyframes breath{
-  0%{transform:scale(1);}
-  25%{transform:scale(1.4);}
-  50%{transform:scale(1.4);}
-  75%{transform:scale(1);}
-  100%{transform:scale(1);}
-}
-
-#cycleText{
-  margin-top:15px;
-  font-size:0.95rem;
-  color:#28a745;
-}
-
-#breathText{
-  font-size:1.2rem;
-  color:#fcfdfd;
-}
-
-#cycleText{
-  font-size:0.95rem;
-  color:#28a745;
-  margin-bottom:20px;
-}
-
-button.main{
-  padding:14px 40px;
-  border:none;
-  border-radius:30px;
-  background:#28a745;
-  color:#fff;
-  font-size:1rem;
-  cursor:pointer;
-  opacity:0.5;
-  pointer-events:none;
-  transition:0.3s;
-}
-
-button.main.enabled{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.result-box{
-  margin-top:20px;
-  font-size:0.95rem;
-  color:#0b5ed7;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{min-height:100vh;background:linear-gradient(135deg,#eaf6ff,#f7fbff);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;}
+nav{position:fixed;top:0;width:100%;padding:15px 24px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(14px);background:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.4);z-index:1000;}
+nav .logo{font-size:1.2rem;font-weight:600;color:#0b5ed7;}
+nav .pill{background:#28a745;color:#fff;border-radius:20px;padding:8px 12px;font-size:0.8rem;}
+h1{color:#0b5ed7;margin-bottom:10px;}
+p{color:#333;margin-bottom:18px;}
+.scale{margin:10px 0 25px;}
+.scale button{margin:5px;padding:10px 15px;border-radius:50%;border:none;background:#0b5ed7;color:#fff;cursor:pointer;}
+.scale button.selected{background:#28a745;}
+.breath-container{position:relative;width:210px;height:210px;margin-bottom:18px;display:none;}
+.circle{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,#28a745,#0b5ed7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;animation:breath 12s ease-in-out infinite;}
+@keyframes breath{0%{transform:scale(1);}25%{transform:scale(1.35);}50%{transform:scale(1.35);}75%{transform:scale(1);}100%{transform:scale(1);}}
+#cycleText{font-size:0.95rem;color:#28a745;margin-bottom:15px;min-height:24px;}
+button.main{padding:14px 30px;border:none;border-radius:30px;background:#28a745;color:#fff;font-size:1rem;cursor:pointer;opacity:0.5;pointer-events:none;}
+button.main.enabled{opacity:1;pointer-events:auto;}
 </style>
 </head>
-
 <body>
-
-<!-- NAVBAR -->
 <nav>
-  <div class="logo">🌿 CalmLearn</div>
-  <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="experiment.html">Experiment</a></li>
-    <!-- <li><a href="learn.html">Learn</a></li> -->
-    <li><a href="quiz.html">Quiz</a></li>
-    <li><a href="results.html">Results</a></li>
-  </ul>
-  <button id="accessBtn">♿ Accessibility</button>
+  <div class="logo">CalmLearn | Calm Track</div>
+  <div class="pill" id="roundPill">Round 1 of 2</div>
 </nav>
 
-<!-- ACCESSIBILITY PANEL -->
-<div id="accessibilityPanel">
-  <h4>Accessibility</h4>
-
-  <div class="toggle-row">
-    <label for="accessToggle">Enable</label>
-    <input type="checkbox" id="accessToggle">
-  </div>
-
-  <label for="fontSlider">Text Size</label>
-  <input type="range" id="fontSlider" min="14" max="22" value="16">
-</div>
-
-<h1>🌿 Calm Before Learning</h1>
-<p>First, how stressed do you feel right now?</p>
+<h1>Calm Reset Before Learning</h1>
+<p>Rate your stress now, complete 3 slow breathing cycles, then continue.</p>
 
 <div class="scale" id="preScale">
-  <button onclick="selectPre(1)">1</button>
-  <button onclick="selectPre(2)">2</button>
-  <button onclick="selectPre(3)">3</button>
-  <button onclick="selectPre(4)">4</button>
-  <button onclick="selectPre(5)">5</button>
+  <button onclick="selectPre(1)" type="button">1</button>
+  <button onclick="selectPre(2)" type="button">2</button>
+  <button onclick="selectPre(3)" type="button">3</button>
+  <button onclick="selectPre(4)" type="button">4</button>
+  <button onclick="selectPre(5)" type="button">5</button>
 </div>
 
-<p id="instruction" style="display:none;">Now breathe slowly with the Circle</p>
-
-<div class="breath-container" style="display:none;" id="waveBox">
-  <div class="circle">
-    <div id="breathText"></div>
-  </div>
+<p id="instruction" style="display:none;">Follow the circle rhythm.</p>
+<div class="breath-container" id="waveBox">
+  <div class="circle"><div id="breathText"></div></div>
 </div>
-
 <div id="cycleText"></div>
 
 <div id="postSection" style="display:none;">
-  <p>How stressed do you feel now?</p>
+  <p>After breathing, how stressed do you feel?</p>
   <div class="scale" id="postScale">
-    <button onclick="selectPost(1)">1</button>
-    <button onclick="selectPost(2)">2</button>
-    <button onclick="selectPost(3)">3</button>
-    <button onclick="selectPost(4)">4</button>
-    <button onclick="selectPost(5)">5</button>
+    <button onclick="selectPost(1)" type="button">1</button>
+    <button onclick="selectPost(2)" type="button">2</button>
+    <button onclick="selectPost(3)" type="button">3</button>
+    <button onclick="selectPost(4)" type="button">4</button>
+    <button onclick="selectPost(5)" type="button">5</button>
   </div>
 </div>
 
-<div class="result-box" id="stressResult"></div>
-
-<button class="main" id="continueBtn">Continue to Learning</button>
+<button class="main" id="continueBtn" type="button">Continue To CalmLearn Content</button>
 
 <script>
-
-const accessBtn = document.getElementById("accessBtn");
-const panel = document.getElementById("accessibilityPanel");
-const toggle = document.getElementById("accessToggle");
-const slider = document.getElementById("fontSlider");
-
-accessBtn.onclick = () => {
-  panel.style.display = panel.style.display === "block" ? "none" : "block";
-};
-
-toggle.onchange = () => {
-  document.body.classList.toggle("accessible", toggle.checked);
-  localStorage.setItem("accessible", toggle.checked);
-};
-
-slider.oninput = () => {
-  document.documentElement.style.setProperty(
-    "--base-font-size",
-    slider.value + "px"
-  );
-  localStorage.setItem("fontSize", slider.value);
-};
-
-window.onload = () => {
-  if (localStorage.getItem("accessible") === "true") {
-    document.body.classList.add("accessible");
-    toggle.checked = true;
-  }
-  const savedFont = localStorage.getItem("fontSize");
-  if (savedFont) {
-    document.documentElement.style.setProperty("--base-font-size", savedFont + "px");
-    slider.value = savedFont;
-  }
-};
+const order = JSON.parse(localStorage.getItem("methodOrder") || "[]");
+const idx = Number(localStorage.getItem("currentMethodIndex") || "0");
+const round = idx + 1;
+document.getElementById("roundPill").textContent = `Round ${round} of ${order.length || 2}`;
 
 let preStress = null;
 let postStress = null;
 let cycles = 0;
 let phase = 0;
-
 const phases = ["Breathe In", "Hold", "Breathe Out"];
 const breathText = document.getElementById("breathText");
 const cycleText = document.getElementById("cycleText");
@@ -323,12 +77,14 @@ const continueBtn = document.getElementById("continueBtn");
 
 function selectPre(value){
   preStress = value;
-  localStorage.setItem("preStress", value);
+  localStorage.setItem("calmBreathingPreStress", String(value));
+  const buttons = document.querySelectorAll("#preScale button");
+  buttons.forEach(btn => btn.classList.remove("selected"));
+  buttons[value - 1].classList.add("selected");
 
   document.getElementById("preScale").style.display = "none";
   document.getElementById("instruction").style.display = "block";
   document.getElementById("waveBox").style.display = "block";
-
   startBreathing();
 }
 
@@ -344,7 +100,7 @@ function startBreathing(){
     }
 
     if(cycles >= 3){
-      breathText.textContent = "You’re Ready 🌿";
+      breathText.textContent = "Ready";
       document.getElementById("postSection").style.display = "block";
       return;
     }
@@ -357,23 +113,18 @@ function startBreathing(){
 
 function selectPost(value){
   postStress = value;
-  localStorage.setItem("postStress", value);
-
-  const difference = preStress - postStress;
-
-  document.getElementById("stressResult").textContent =
-    difference > 0
-    ? `Your stress reduced by ${difference} level(s).`
-    : `Your stress level stayed the same.`;
-
+  localStorage.setItem("calmBreathingPostStress", String(value));
+  const buttons = document.querySelectorAll("#postScale button");
+  buttons.forEach(btn => btn.classList.remove("selected"));
+  buttons[value - 1].classList.add("selected");
   continueBtn.classList.add("enabled");
 }
 
 continueBtn.onclick = function(){
+  if (!continueBtn.classList.contains("enabled")) return;
+  localStorage.setItem("currentMethod", "calmlearn");
   window.location.href = "learn.html";
-}
-
+};
 </script>
-
 </body>
 </html>

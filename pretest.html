@@ -1,253 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>CalmLearn | Pre-Test Assessment</title>
+<meta charset="UTF-8">
+<title>CalmLearn | Pre-Learning Assessment</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body{
-  font-family:Poppins, sans-serif;
-  background:linear-gradient(135deg,#eaf6ff,#f7fbff);
-  text-align:center;
-  padding:40px;
-}
-
-/* ================= NAVBAR (GLASS) ================= */
+:root { --base-font-size: 16px; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Poppins, sans-serif; }
+html { font-size: var(--base-font-size); }
+body { background: linear-gradient(135deg,#eaf6ff,#f7fbff); color: #333; padding: 30px 16px; }
 nav {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  padding: 15px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  backdrop-filter: blur(14px);
-  background: rgba(255, 255, 255, 0.35);
-  border-bottom: 1px solid rgba(255,255,255,0.4);
-  z-index: 1000;
+  position: fixed; top: 0; width: 100%; left: 0; padding: 15px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+  backdrop-filter: blur(14px); background: rgba(255,255,255,0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.4); z-index: 1000;
 }
-
-nav .logo {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #0b5ed7;
-}
-
-nav ul {
-  display: flex;
-  gap: 25px;
-  list-style: none;
-  align-items: center;
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: #333;
-  font-size: 0.95rem;
-}
-
-nav ul li a:hover {
-  color: #0b5ed7;
-}
-
-nav button {
-  background: #000;
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
-/* ================= ACCESSIBILITY PANEL ================= */
+nav .logo { font-size: 1.2rem; font-weight: 600; color: #0b5ed7; }
+nav button { background: #000; color: #fff; border: none; padding: 10px 18px; border-radius: 25px; cursor: pointer; font-size: 0.85rem; }
 #accessibilityPanel {
-  position: fixed;
-  top: 80px;
-  right: 30px;
-  width: 240px;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-  padding: 20px;
-  display: none;
-  z-index: 1001;
+  position: fixed; top: 72px; right: 20px; width: 240px; background: #fff;
+  border-radius: 18px; box-shadow: 0 15px 30px rgba(0,0,0,0.2); padding: 20px; display: none; z-index: 1001;
 }
-
-#accessibilityPanel h4 {
-  margin-bottom: 15px;
+.toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.container {
+  max-width: 860px; margin: 90px auto 20px; background: #fff; padding: 28px;
+  border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
-
-.toggle-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+h1 { color: #0b5ed7; margin-bottom: 10px; }
+.subtitle { margin-bottom: 20px; line-height: 1.6; }
+.scale-note {
+  background: #f1f8ff; border-left: 4px solid #0b5ed7; padding: 12px; margin-bottom: 20px;
 }
-
-.toggle-row input {
-  transform: scale(1.3);
-  cursor: pointer;
+.section { margin: 20px 0; }
+.section h3 { margin-bottom: 8px; }
+.scale { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.scale button {
+  width: 42px; height: 42px; border-radius: 50%; border: none; background: #0b5ed7; color: #fff; cursor: pointer;
 }
-
-#fontSlider {
-  width: 100%;
-  cursor: pointer;
+.scale button.selected { background: #28a745; }
+label { display: block; margin-bottom: 8px; font-weight: 600; }
+select {
+  width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; background: #fff;
 }
-
-h1{
-  color:#0b5ed7;
-  margin-bottom:10px;
+.start-btn {
+  margin-top: 22px; padding: 14px 24px; border: none; border-radius: 30px;
+  background: #28a745; color: #fff; font-size: 1rem; cursor: pointer; opacity: 0.5; pointer-events: none;
 }
-
-p{
-  margin-bottom:20px;
-  color:#333;
-}
-
-.section{
-  margin:25px 0;
-}
-
-.scale button{
-  margin:5px;
-  padding:12px 18px;
-  border-radius:50%;
-  border:none;
-  background:#0b5ed7;
-  color:#fff;
-  cursor:pointer;
-}
-
-.scale button.selected{
-  background:#28a745;
-}
-
-select{
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  width:250px;
-}
-
-.start-btn{
-  margin-top:30px;
-  padding:15px 40px;
-  border:none;
-  border-radius:30px;
-  background:#28a745;
-  color:#fff;
-  font-size:1rem;
-  cursor:pointer;
-  opacity:0.5;
-  pointer-events:none;
-}
-.start-btn.enabled{
-  opacity:1;
-  pointer-events:auto;
-}
+.start-btn.enabled { opacity: 1; pointer-events: auto; }
 </style>
 </head>
-
 <body>
-
-<!-- NAVBAR -->
 <nav>
-  <div class="logo">🌿 CalmLearn</div>
-  <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="experiment.html">Experiment</a></li>
-    <!-- <li><a href="learn.html">Learn</a></li> -->
-    <li><a href="quiz.html">Quiz</a></li>
-    <li><a href="results.html">Results</a></li>
-  </ul>
-  <button id="accessBtn">♿ Accessibility</button>
+  <div class="logo">CalmLearn</div>
+  <button id="accessBtn">Accessibility</button>
 </nav>
 
-<!-- ACCESSIBILITY PANEL -->
 <div id="accessibilityPanel">
   <h4>Accessibility</h4>
-
   <div class="toggle-row">
     <label for="accessToggle">Enable</label>
     <input type="checkbox" id="accessToggle">
   </div>
-
   <label for="fontSlider">Text Size</label>
   <input type="range" id="fontSlider" min="14" max="22" value="16">
 </div>
 
-<h1>📊 Pre-Learning Assessment</h1>
-<p>Please answer honestly before we begin.</p>
+<div class="container">
+  <h1>Pre-Learning Assessment</h1>
+  <p class="subtitle">
+    Topic for this study: <strong>Photosynthesis</strong>.
+    You will complete both learning methods in randomized order.
+  </p>
 
-<div class="section">
-  <h3>How stressed do you feel right now?</h3>
-  <div class="scale" id="stressScale">
-    <button onclick="selectValue('stress',1)">1</button>
-    <button onclick="selectValue('stress',2)">2</button>
-    <button onclick="selectValue('stress',3)">3</button>
-    <button onclick="selectValue('stress',4)">4</button>
-    <button onclick="selectValue('stress',5)">5</button>
+  <div class="scale-note">
+    Use the same scale logic for all 1-5 ratings:
+    1 = very low, 2 = low, 3 = neutral, 4 = high, 5 = very high.
   </div>
-</div>
 
-<div class="section">
-  <h3>How confident are you about this topic?</h3>
-  <div class="scale" id="confidenceScale">
-    <button onclick="selectValue('confidence',1)">1</button>
-    <button onclick="selectValue('confidence',2)">2</button>
-    <button onclick="selectValue('confidence',3)">3</button>
-    <button onclick="selectValue('confidence',4)">4</button>
-    <button onclick="selectValue('confidence',5)">5</button>
+  <div class="section">
+    <label for="ageRange">Age Range</label>
+    <select id="ageRange">
+      <option value="">Select age range</option>
+      <option value="under-18">Under 18</option>
+      <option value="18-24">18-24</option>
+      <option value="25-34">25-34</option>
+      <option value="35-plus">35+</option>
+    </select>
   </div>
-</div>
 
-<div class="section">
-  <h3>How comfortable are you reading long texts?</h3>
-  <div class="scale" id="readingScale">
-    <button onclick="selectValue('reading',1)">1</button>
-    <button onclick="selectValue('reading',2)">2</button>
-    <button onclick="selectValue('reading',3)">3</button>
-    <button onclick="selectValue('reading',4)">4</button>
-    <button onclick="selectValue('reading',5)">5</button>
+  <div class="section">
+    <label for="learningStyle">Preferred Learning Style</label>
+    <select id="learningStyle">
+      <option value="">Select style</option>
+      <option value="visual">Visual</option>
+      <option value="reading">Reading/Writing</option>
+      <option value="auditory">Auditory</option>
+      <option value="mixed">Mixed</option>
+    </select>
   </div>
-</div>
 
-<div class="section">
-  <h3>Select Learning Method</h3>
-  <select id="methodSelect">
-    <option value="">Choose Method</option>
-    <option value="textbook">Textbook Method</option>
-    <option value="calm">CalmLearn Method</option>
-  </select>
-</div>
+  <div class="section">
+    <h3>How stressed do you feel right now?</h3>
+    <div class="scale" id="stressScale">
+      <button onclick="selectValue('stress',1)" type="button">1</button>
+      <button onclick="selectValue('stress',2)" type="button">2</button>
+      <button onclick="selectValue('stress',3)" type="button">3</button>
+      <button onclick="selectValue('stress',4)" type="button">4</button>
+      <button onclick="selectValue('stress',5)" type="button">5</button>
+    </div>
+  </div>
 
-<button class="start-btn" id="startBtn">Start Learning</button>
+  <div class="section">
+    <h3>How confident are you about photosynthesis?</h3>
+    <div class="scale" id="confidenceScale">
+      <button onclick="selectValue('confidence',1)" type="button">1</button>
+      <button onclick="selectValue('confidence',2)" type="button">2</button>
+      <button onclick="selectValue('confidence',3)" type="button">3</button>
+      <button onclick="selectValue('confidence',4)" type="button">4</button>
+      <button onclick="selectValue('confidence',5)" type="button">5</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>How comfortable are you reading long science text?</h3>
+    <div class="scale" id="readingScale">
+      <button onclick="selectValue('reading',1)" type="button">1</button>
+      <button onclick="selectValue('reading',2)" type="button">2</button>
+      <button onclick="selectValue('reading',3)" type="button">3</button>
+      <button onclick="selectValue('reading',4)" type="button">4</button>
+      <button onclick="selectValue('reading',5)" type="button">5</button>
+    </div>
+  </div>
+
+  <button class="start-btn" id="startBtn" type="button">Begin Study Flow</button>
+</div>
 
 <script>
-
 const accessBtn = document.getElementById("accessBtn");
 const panel = document.getElementById("accessibilityPanel");
 const toggle = document.getElementById("accessToggle");
 const slider = document.getElementById("fontSlider");
 
-accessBtn.onclick = () => {
-  panel.style.display = panel.style.display === "block" ? "none" : "block";
-};
-
+accessBtn.onclick = () => { panel.style.display = panel.style.display === "block" ? "none" : "block"; };
 toggle.onchange = () => {
   document.body.classList.toggle("accessible", toggle.checked);
   localStorage.setItem("accessible", toggle.checked);
 };
-
 slider.oninput = () => {
-  document.documentElement.style.setProperty(
-    "--base-font-size",
-    slider.value + "px"
-  );
+  document.documentElement.style.setProperty("--base-font-size", slider.value + "px");
   localStorage.setItem("fontSize", slider.value);
 };
-
 window.onload = () => {
   if (localStorage.getItem("accessible") === "true") {
     document.body.classList.add("accessible");
@@ -260,59 +162,52 @@ window.onload = () => {
   }
 };
 
-let responses = {
-  stress:null,
-  confidence:null,
-  reading:null
-};
+const responses = { stress: null, confidence: null, reading: null };
 
-function selectValue(type, value){
+function selectValue(type, value) {
   responses[type] = value;
-
-  const scale = document.getElementById(type+"Scale");
+  const scale = document.getElementById(type + "Scale");
   const buttons = scale.getElementsByTagName("button");
-
-  for(let btn of buttons){
-    btn.classList.remove("selected");
-  }
-
-  buttons[value-1].classList.add("selected");
-
+  for (const btn of buttons) { btn.classList.remove("selected"); }
+  buttons[value - 1].classList.add("selected");
   checkReady();
 }
 
-document.getElementById("methodSelect").addEventListener("change", checkReady);
-
-function checkReady(){
-  if(
-    responses.stress &&
-    responses.confidence &&
-    responses.reading &&
-    document.getElementById("methodSelect").value !== ""
-  ){
+function checkReady() {
+  const ageRange = document.getElementById("ageRange").value;
+  const learningStyle = document.getElementById("learningStyle").value;
+  if (responses.stress && responses.confidence && responses.reading && ageRange && learningStyle) {
     document.getElementById("startBtn").classList.add("enabled");
   }
 }
 
-document.getElementById("startBtn").onclick = function(){
+document.getElementById("ageRange").addEventListener("change", checkReady);
+document.getElementById("learningStyle").addEventListener("change", checkReady);
+
+document.getElementById("startBtn").onclick = function () {
+  if (!this.classList.contains("enabled")) return;
+
+  localStorage.clear();
+  localStorage.setItem("accessible", toggle.checked);
+  localStorage.setItem("fontSize", slider.value);
 
   localStorage.setItem("baselineStress", responses.stress);
   localStorage.setItem("baselineConfidence", responses.confidence);
   localStorage.setItem("baselineReadingComfort", responses.reading);
+  localStorage.setItem("participantAgeRange", document.getElementById("ageRange").value);
+  localStorage.setItem("participantLearningStyle", document.getElementById("learningStyle").value);
+  localStorage.setItem("activeTopic", "Photosynthesis");
+  localStorage.setItem("participantStartedAt", Date.now());
+  const participantId = `P-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+  localStorage.setItem("participantId", participantId);
 
-  let method = document.getElementById("methodSelect").value;
+  const methodOrder = Math.random() < 0.5 ? ["textbook", "calmlearn"] : ["calmlearn", "textbook"];
+  localStorage.setItem("methodOrder", JSON.stringify(methodOrder));
+  localStorage.setItem("currentMethodIndex", "0");
+  localStorage.setItem("currentMethod", methodOrder[0]);
 
-  if(method === "textbook"){
-    localStorage.setItem("textbookPreStress", responses.stress);
-    window.location.href = "textbook.html";
-  }
-  else{
-    localStorage.setItem("preStress", responses.stress);
-    window.location.href = "calm.html";
-  }
+  window.location.href = methodOrder[0] === "textbook" ? "textbook.html" : "calm.html";
 };
-
 </script>
-
 </body>
 </html>

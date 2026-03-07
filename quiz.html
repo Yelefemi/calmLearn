@@ -4,196 +4,176 @@
   <meta charset="UTF-8">
   <title>CalmLearn | Quiz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    body {
-      background: #f7fbff;
-      color: #333;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background: #f7fbff; color: #333; }
     nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      padding: 15px 40px;
-      backdrop-filter: blur(12px);
-      background: rgba(255,255,255,0.4);
+      position: fixed; top: 0; width: 100%; padding: 15px 24px;
+      backdrop-filter: blur(12px); background: rgba(255,255,255,0.4);
       border-bottom: 1px solid rgba(255,255,255,0.5);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 1000;
+      display: flex; justify-content: space-between; align-items: center; z-index: 1000;
     }
-
-    nav h2 {
-      color: #0b5ed7;
-    }
-
-    .timer {
-      color: red;
-      font-weight: 600;
-    }
-
-    .container {
-      max-width: 850px;
-      margin: auto;
-      padding: 140px 20px 60px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #0b5ed7;
-    }
-
+    nav h2 { color: #0b5ed7; font-size: 1.1rem; }
+    .timer { color: #c30000; font-weight: 600; }
+    .container { max-width: 850px; margin: auto; padding: 110px 20px 40px; }
+    h1 { text-align: center; margin-bottom: 12px; color: #0b5ed7; }
+    .meta { text-align: center; margin-bottom: 22px; color: #435; }
     .question {
-      background: #fff;
-      padding: 25px;
-      border-radius: 18px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      margin-bottom: 25px;
+      background: #fff; padding: 22px; border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08); margin-bottom: 16px;
     }
-
-    .question h3 {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      cursor: pointer;
-    }
-
+    .question h3 { margin-bottom: 12px; font-size: 1.02rem; }
+    label { display: block; margin-bottom: 8px; cursor: pointer; }
     .submit-btn {
-      display: block;
-      margin: 40px auto;
-      padding: 16px 45px;
-      border-radius: 30px;
-      border: none;
-      background: #28a745;
-      color: #fff;
-      font-size: 1.1rem;
-      cursor: pointer;
+      display: block; margin: 30px auto; padding: 14px 32px;
+      border-radius: 30px; border: none; background: #28a745;
+      color: #fff; font-size: 1rem; cursor: pointer;
     }
   </style>
 </head>
-
 <body>
 
 <nav>
-  <h2>📝 CalmLearn Quiz</h2>
-  <div class="timer">⏱ Time Left: <span id="time">05:00</span></div>
+  <h2>Photosynthesis Quiz</h2>
+  <div class="timer">Time Left: <span id="time">05:00</span></div>
 </nav>
 
 <div class="container">
-  <h1>Photosynthesis Quiz</h1>
-
-  <form id="quizForm">
-
-    <div class="question">
-      <h3>1. What is photosynthesis?</h3>
-      <label><input type="radio" name="q1" value="a"> A way plants breathe</label>
-      <label><input type="radio" name="q1" value="b"> How plants make food</label>
-      <label><input type="radio" name="q1" value="c"> How animals eat</label>
-    </div>
-
-    <div class="question">
-      <h3>2. Which of these is needed for photosynthesis?</h3>
-      <label><input type="radio" name="q2" value="a"> Sunlight</label>
-      <label><input type="radio" name="q2" value="b"> Meat</label>
-      <label><input type="radio" name="q2" value="c"> Plastic</label>
-    </div>
-
-    <div class="question">
-      <h3>3. What gas is released during photosynthesis?</h3>
-      <label><input type="radio" name="q3" value="a"> Carbon dioxide</label>
-      <label><input type="radio" name="q3" value="b"> Oxygen</label>
-      <label><input type="radio" name="q3" value="c"> Nitrogen</label>
-    </div>
-
-    <div class="question">
-      <h3>4. Where in the plant does photosynthesis mainly occur?</h3>
-      <label><input type="radio" name="q4" value="a"> Roots</label>
-      <label><input type="radio" name="q4" value="b"> Leaves</label>
-      <label><input type="radio" name="q4" value="c"> Stem</label>
-    </div>
-
-    <div class="question">
-      <h3>5. Which pigment gives leaves their green color?</h3>
-      <label><input type="radio" name="q5" value="a"> Hemoglobin</label>
-      <label><input type="radio" name="q5" value="b"> Chlorophyll</label>
-      <label><input type="radio" name="q5" value="c"> Melanin</label>
-    </div>
-
-    <div class="question">
-      <h3>6. What do plants take in from the soil?</h3>
-      <label><input type="radio" name="q6" value="a"> Carbon dioxide</label>
-      <label><input type="radio" name="q6" value="b"> Water</label>
-      <label><input type="radio" name="q6" value="c"> Oxygen</label>
-    </div>
-
-    <div class="question">
-      <h3>7. Which of the following is NOT needed for photosynthesis?</h3>
-      <label><input type="radio" name="q7" value="a"> Sunlight</label>
-      <label><input type="radio" name="q7" value="b"> Soil</label>
-      <label><input type="radio" name="q7" value="c"> Carbon dioxide</label>
-    </div>
-
-    <div class="question">
-      <h3>8. What happens to extra sugar made in photosynthesis?</h3>
-      <label><input type="radio" name="q8" value="a"> It is stored in the plant</label>
-      <label><input type="radio" name="q8" value="b"> It turns into water</label>
-      <label><input type="radio" name="q8" value="c"> It disappears</label>
-    </div>
-
-    <div class="question">
-      <h3>9. Which organisms benefit directly from the oxygen released?</h3>
-      <label><input type="radio" name="q9" value="a"> Plants</label>
-      <label><input type="radio" name="q9" value="b"> Animals</label>
-      <label><input type="radio" name="q9" value="c"> Both plants and animals</label>
-    </div>
-
-    <div class="question">
-      <h3>10. Why are plants sometimes called "lungs of the planet"?</h3>
-      <label><input type="radio" name="q10" value="a"> They breathe in carbon dioxide and out oxygen</label>
-      <label><input type="radio" name="q10" value="b"> They produce smoke</label>
-      <label><input type="radio" name="q10" value="c"> They make air indoors</label>
-    </div>
-
-
-    <button type="button" class="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
-
-  </form>
+  <h1>Knowledge Check</h1>
+  <p class="meta" id="metaText"></p>
+  <form id="quizForm"></form>
+  <button type="button" class="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
 </div>
 
 <script>
-  let time = 300; // 5 minutes
+  const method = localStorage.getItem("currentMethod") || "textbook";
+  const methodIndex = Number(localStorage.getItem("currentMethodIndex") || "0");
+  const round = methodIndex + 1;
+  document.getElementById("metaText").textContent = `Round ${round} of 2 | Method: ${method}`;
+
+  const questionBank = [
+    {
+      id: "q1",
+      answer: "b",
+      variants: [
+        { prompt: "What is photosynthesis?", options: ["A way plants breathe", "How plants make food", "How animals eat"] },
+        { prompt: "Which chemical process do plants use to create food?", options: ["Respiration", "Photosynthesis", "Fermentation"] }
+      ]
+    },
+    {
+      id: "q2",
+      answer: "a",
+      variants: [
+        { prompt: "Which of these is needed for photosynthesis?", options: ["Sunlight", "Meat", "Plastic"] },
+        { prompt: "Which resource provides energy input for photosynthesis?", options: ["Sunlight", "Sand", "Metal"] }
+      ]
+    },
+    {
+      id: "q3",
+      answer: "b",
+      variants: [
+        { prompt: "What gas is released during photosynthesis?", options: ["Carbon dioxide", "Oxygen", "Nitrogen"] },
+        { prompt: "Which gas do plants release as an output of photosynthesis?", options: ["Hydrogen", "Oxygen", "Helium"] }
+      ]
+    },
+    {
+      id: "q4",
+      answer: "b",
+      variants: [
+        { prompt: "Where in the plant does photosynthesis mainly occur?", options: ["Roots", "Leaves", "Stem"] },
+        { prompt: "Which plant part performs most photosynthesis?", options: ["Flower", "Leaves", "Bark"] }
+      ]
+    },
+    {
+      id: "q5",
+      answer: "b",
+      variants: [
+        { prompt: "Which pigment gives leaves their green color?", options: ["Hemoglobin", "Chlorophyll", "Melanin"] },
+        { prompt: "What light-absorbing pigment is central to photosynthesis?", options: ["Keratin", "Chlorophyll", "Collagen"] }
+      ]
+    },
+    {
+      id: "q6",
+      answer: "b",
+      variants: [
+        { prompt: "What do plants take in from the soil for photosynthesis?", options: ["Carbon dioxide", "Water", "Oxygen"] },
+        { prompt: "Which input is absorbed through roots for photosynthesis?", options: ["Chlorine", "Water", "Ozone"] }
+      ]
+    },
+    {
+      id: "q7",
+      answer: "b",
+      variants: [
+        { prompt: "Which of the following is NOT directly required for photosynthesis?", options: ["Sunlight", "Soil", "Carbon dioxide"] },
+        { prompt: "Which item is not a direct reactant in photosynthesis?", options: ["Water", "Soil", "Carbon dioxide"] }
+      ]
+    },
+    {
+      id: "q8",
+      answer: "a",
+      variants: [
+        { prompt: "What happens to extra sugar produced by photosynthesis?", options: ["It is stored in the plant", "It turns into water", "It disappears"] },
+        { prompt: "When plants make surplus glucose, what do they commonly do with it?", options: ["Store it", "Burn it immediately", "Release it as gas"] }
+      ]
+    },
+    {
+      id: "q9",
+      answer: "c",
+      variants: [
+        { prompt: "Which organisms benefit directly from oxygen released by plants?", options: ["Plants only", "Animals only", "Plants and animals"] },
+        { prompt: "Who can use oxygen generated during photosynthesis?", options: ["Only fungi", "Only bacteria", "Many organisms including animals and plants"] }
+      ]
+    },
+    {
+      id: "q10",
+      answer: "a",
+      variants: [
+        { prompt: "Why are plants sometimes called lungs of the planet?", options: ["They help cycle gases by taking in CO2 and releasing O2", "They produce smoke", "They absorb all water"] },
+        { prompt: "What best explains the phrase 'plants are lungs of Earth'?", options: ["They support atmospheric oxygen through gas exchange", "They create clouds", "They produce minerals"] }
+      ]
+    }
+  ];
+
+  const letters = ["a", "b", "c"];
+
+  function shuffle(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  const renderedQuestions = shuffle(questionBank).map((q, idx) => {
+    const version = q.variants[methodIndex % 2];
+    const options = version.options.map((label, i) => ({ value: letters[i], label }));
+    return { ...q, index: idx + 1, prompt: version.prompt, options };
+  });
+
+  const quizForm = document.getElementById("quizForm");
+  renderedQuestions.forEach((q) => {
+    const box = document.createElement("div");
+    box.className = "question";
+
+    const title = document.createElement("h3");
+    title.textContent = `${q.index}. ${q.prompt}`;
+    box.appendChild(title);
+
+    q.options.forEach((opt) => {
+      const label = document.createElement("label");
+      label.innerHTML = `<input type="radio" name="${q.id}" value="${opt.value}"> ${opt.label}`;
+      box.appendChild(label);
+    });
+
+    quizForm.appendChild(box);
+  });
+
+  let time = 300;
   const timerEl = document.getElementById("time");
   const quizStart = Date.now();
-
-  const answers = {
-    q1: "b",
-    q2: "a",
-    q3: "b"
-  };
-
-  // additional answers for extended quiz
-  answers.q4 = "b"; // leaves
-  answers.q5 = "b"; // chlorophyll
-  answers.q6 = "b"; // water
-  answers.q7 = "b"; // soil is not needed directly
-  answers.q8 = "a"; // stored in plant
-  answers.q9 = "b"; // animals (though plants also use it)
-  answers.q10 = "a"; // they exchange gases like lungs
+  let submitted = false;
 
   const countdown = setInterval(() => {
     const minutes = Math.floor(time / 60);
@@ -208,48 +188,23 @@
   }, 1000);
 
   function submitQuiz(){
+    if (submitted) return;
+    submitted = true;
+    clearInterval(countdown);
 
-  // 1️⃣ Calculate Score
-  let score = calculateScore(); 
+    let score = 0;
+    renderedQuestions.forEach((q) => {
+      const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+      if (selected && selected.value === q.answer) score++;
+    });
 
-  // record total number of questions for any summary pages
-  localStorage.setItem("quizTotal", Object.keys(answers).length);
+    const quizSeconds = Math.floor((Date.now() - quizStart) / 1000);
 
-  // fall back to learningMethod if selectedMethod isn't used
-  let method = localStorage.getItem("selectedMethod") || localStorage.getItem("learningMethod");
+    localStorage.setItem(`${method}Score`, String(score));
+    localStorage.setItem(`${method}QuizTime`, String(quizSeconds));
+    localStorage.setItem(`${method}QuizTotal`, String(renderedQuestions.length));
 
-  if(method === "textbook"){
-    localStorage.setItem("textbookScore", score);
-  } else {
-    localStorage.setItem("calmScore", score);
-  }
-
-  // 2️⃣ Calculate Time
-  let endTime = Date.now();
-  let startTime = localStorage.getItem("startTime");
-  let totalTime = Math.floor((endTime - startTime) / 1000);
-
-  if(method === "textbook"){
-    localStorage.setItem("textbookTime", totalTime);
-  } else {
-    localStorage.setItem("calmTime", totalTime);
-  }
-
-
-  // 5️⃣ Redirect to feedback page for post-quiz survey
-  window.location.href = "feedback.html";
-}
-
-  // simple scorer that reads each answer key and checks the selected radio
-  function calculateScore() {
-    let total = 0;
-    for (const q in answers) {
-      const selected = document.querySelector(`input[name="${q}"]:checked`);
-      if (selected && selected.value === answers[q]) {
-        total++;
-      }
-    }
-    return total;
+    window.location.href = "feedback.html";
   }
 </script>
 

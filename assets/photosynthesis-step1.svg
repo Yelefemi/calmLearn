@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#eaf6ff"/>
+  <circle cx="170" cy="120" r="55" fill="#ffd95e"/>
+  <g fill="#28a745">
+    <ellipse cx="520" cy="330" rx="150" ry="80"/>
+    <ellipse cx="390" cy="355" rx="100" ry="55"/>
+  </g>
+  <rect x="500" y="330" width="22" height="120" fill="#6b4f2a"/>
+  <text x="90" y="500" font-family="Poppins, Arial" font-size="34" fill="#0b5ed7">Sunlight starts photosynthesis</text>
+</svg>

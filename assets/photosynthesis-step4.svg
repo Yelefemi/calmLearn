@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#edf9ff"/>
+  <g fill="#28a745">
+    <ellipse cx="290" cy="250" rx="170" ry="90"/>
+    <ellipse cx="430" cy="320" rx="130" ry="70"/>
+  </g>
+  <rect x="340" y="280" width="20" height="135" fill="#6b4f2a"/>
+  <g fill="#9fd8ff">
+    <circle cx="620" cy="200" r="45"/>
+    <circle cx="700" cy="160" r="55"/>
+    <circle cx="780" cy="220" r="48"/>
+  </g>
+  <text x="640" y="236" font-family="Poppins, Arial" font-size="44" fill="#0b5ed7">O2</text>
+  <text x="120" y="500" font-family="Poppins, Arial" font-size="30" fill="#0b5ed7">Oxygen is released to the atmosphere</text>
+</svg>

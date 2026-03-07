@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#f7fbff"/>
+  <g>
+    <ellipse cx="300" cy="260" rx="150" ry="100" fill="#c9efcf"/>
+    <ellipse cx="420" cy="300" rx="110" ry="70" fill="#9fddab"/>
+  </g>
+  <g fill="#ffffff" stroke="#9bb6c9" stroke-width="2">
+    <rect x="610" y="150" width="220" height="220" rx="20"/>
+    <circle cx="680" cy="220" r="20"/>
+    <circle cx="760" cy="220" r="20"/>
+    <circle cx="720" cy="275" r="20"/>
+  </g>
+  <text x="630" y="330" font-family="Poppins, Arial" font-size="30" fill="#0b5ed7">Glucose</text>
+  <text x="120" y="500" font-family="Poppins, Arial" font-size="30" fill="#0b5ed7">Plants make sugar (glucose) as food</text>
+</svg>

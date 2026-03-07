@@ -1,0 +1,13 @@
+{
+  "name": "calmlearn-study",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CalmLearn experiment app with Vercel + Postgres backend",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CalmLearn | Study Complete</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; font-family: Poppins, sans-serif; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      background: linear-gradient(135deg,#eaf6ff,#f7fbff); color: #17395c;
+      padding: 20px;
+    }
+    .card {
+      width: min(760px, 100%); background: #fff; border-radius: 16px;
+      padding: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    h1 { margin-top: 0; color: #0b5ed7; }
+    p { line-height: 1.7; }
+    .small { font-size: 0.95rem; color: #435; }
+    .actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+    button {
+      border: none; border-radius: 24px; padding: 12px 20px;
+      background: #0b5ed7; color: #fff; cursor: pointer;
+    }
+    .secondary { background: #28a745; }
+    #saveStatus { margin-top: 14px; font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Thank You</h1>
+    <p>You have completed all required study steps for both methods.</p>
+    <p class="small">
+      Your data is being stored for researcher analysis (time, quiz accuracy, and self-assessments).
+      Individual results are intentionally not shown on this participant screen.
+    </p>
+    <p id="saveStatus">Saving your responses...</p>
+    <div class="actions">
+      <button onclick="window.location.href='index.html'">Back To Home</button>
+      <button class="secondary" onclick="window.location.href='pretest.html'">Start New Participant Session</button>
+    </div>
+  </div>
+
+<script>
+function getNum(key) {
+  const raw = localStorage.getItem(key);
+  if (raw === null || raw === "") return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : null;
+}
+
+async function submitParticipantRecord() {
+  const statusEl = document.getElementById("saveStatus");
+
+  const payload = {
+    participant_id: localStorage.getItem("participantId"),
+    topic: localStorage.getItem("activeTopic") || "Photosynthesis",
+    method_order: JSON.parse(localStorage.getItem("methodOrder") || "[]"),
+    age_range: localStorage.getItem("participantAgeRange"),
+    learning_style: localStorage.getItem("participantLearningStyle"),
+
+    baseline_stress: getNum("baselineStress"),
+    baseline_confidence: getNum("baselineConfidence"),
+    baseline_reading_comfort: getNum("baselineReadingComfort"),
+
+    textbook_reading_time: getNum("textbookReadingTime"),
+    textbook_quiz_time: getNum("textbookQuizTime"),
+    textbook_score: getNum("textbookScore"),
+    textbook_quiz_total: getNum("textbookQuizTotal"),
+    textbook_post_stress: getNum("textbookPostStress"),
+    textbook_post_confidence: getNum("textbookPostConfidence"),
+
+    calm_breathing_pre_stress: getNum("calmBreathingPreStress"),
+    calm_breathing_post_stress: getNum("calmBreathingPostStress"),
+    calm_reading_time: getNum("calmlearnReadingTime"),
+    calm_quiz_time: getNum("calmlearnQuizTime"),
+    calm_score: getNum("calmlearnScore"),
+    calm_quiz_total: getNum("calmlearnQuizTotal"),
+    calm_post_stress: getNum("calmlearnPostStress"),
+    calm_post_confidence: getNum("calmlearnPostConfidence"),
+
+    participant_started_at: getNum("participantStartedAt"),
+    participant_completed_at: Date.now()
+  };
+
+  if (!payload.participant_id) {
+    statusEl.textContent = "Could not save: participant ID missing. Please restart the session.";
+    statusEl.style.color = "#c30000";
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/submissions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || "save failed");
+    }
+
+    statusEl.textContent = "Responses saved successfully.";
+    statusEl.style.color = "#19733b";
+  } catch (err) {
+    statusEl.textContent = "Save failed. Keep this browser open and inform the researcher.";
+    statusEl.style.color = "#c30000";
+  }
+}
+
+submitParticipantRecord();
+</script>
+</body>
+</html>

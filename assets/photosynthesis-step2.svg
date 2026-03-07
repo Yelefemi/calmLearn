@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#f0fbff"/>
+  <g>
+    <rect x="180" y="80" width="180" height="360" rx="12" fill="#c9e8ff"/>
+    <rect x="205" y="115" width="130" height="290" rx="8" fill="#7ec8ff"/>
+    <text x="205" y="455" font-family="Poppins, Arial" font-size="28" fill="#0b5ed7">Water</text>
+  </g>
+  <g>
+    <circle cx="560" cy="220" r="86" fill="#d8f0d8"/>
+    <text x="500" y="228" font-family="Poppins, Arial" font-size="44" fill="#2f7d32">CO2</text>
+  </g>
+  <g>
+    <ellipse cx="760" cy="140" rx="80" ry="55" fill="#ffd95e"/>
+    <text x="710" y="150" font-family="Poppins, Arial" font-size="30" fill="#8c6800">Light</text>
+  </g>
+  <text x="70" y="510" font-family="Poppins, Arial" font-size="30" fill="#0b5ed7">Inputs: water + carbon dioxide + light</text>
+</svg>

@@ -4,256 +4,28 @@
   <meta charset="UTF-8">
   <title>CalmLearn | Experiment Setup</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #e6f7ff, #ffffff);
-      color: #333;
-      min-height: 100vh;
-    }
-
-   /* ================= NAVBAR (GLASS) ================= */
-    nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      padding: 15px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      backdrop-filter: blur(14px);
-      background: rgba(255, 255, 255, 0.35);
-      border-bottom: 1px solid rgba(255,255,255,0.4);
-      z-index: 1000;
-    }
-
-    nav .logo {
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: #0b5ed7;
-    }
-
-    nav ul {
-      display: flex;
-      gap: 25px;
-      list-style: none;
-      align-items: center;
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: #333;
-      font-size: 0.95rem;
-    }
-
-    nav ul li a:hover {
-      color: #0b5ed7;
-    }
-
-    nav button {
-      background: #000;
-      color: #fff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-     /* ================= ACCESSIBILITY PANEL ================= */
-    #accessibilityPanel {
-      position: fixed;
-      top: 80px;
-      right: 30px;
-      width: 240px;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-      padding: 20px;
-      display: none;
-      z-index: 1001;
-    }
-
-    #accessibilityPanel h4 {
-      margin-bottom: 15px;
-    }
-
-    .toggle-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .toggle-row input {
-      transform: scale(1.3);
-      cursor: pointer;
-    }
-
-    #fontSlider {
-      width: 100%;
-      cursor: pointer;
-    }
-
-    /* CONTENT */
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 140px 20px 60px;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      color: #0b5ed7;
-      margin-bottom: 20px;
-    }
-
-    p {
-      font-size: 1.05rem;
-      line-height: 1.7;
-      max-width: 700px;
-      margin: auto;
-    }
-
-    .methods {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-      margin-top: 60px;
-    }
-
-    .method-card {
-      background: #fff;
-      padding: 35px;
-      border-radius: 25px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease;
-    }
-
-    .method-card:hover {
-      transform: translateY(-8px);
-    }
-
-    .method-card h2 {
-      margin-bottom: 15px;
-    }
-
-    .method-card p {
-      font-size: 0.95rem;
-      margin-bottom: 25px;
-    }
-
-    button {
-      padding: 14px 35px;
-      border-radius: 30px;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .textbook-btn {
-      background: #0b5ed7;
-      color: #fff;
-    }
-
-    .calmlearn-btn {
-      background: #28a745;
-      color: #fff;
-    }
-
-    footer {
-      margin-top: 80px;
-      text-align: center;
-      color: #777;
-      font-size: 0.9rem;
-    }
+    * { box-sizing: border-box; font-family: Poppins, sans-serif; }
+    body { margin: 0; min-height: 100vh; background: linear-gradient(135deg,#e6f7ff,#ffffff); color: #223; }
+    .container { max-width: 900px; margin: 0 auto; padding: 60px 20px; }
+    h1 { color: #0b5ed7; }
+    .card { background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 10px 24px rgba(0,0,0,0.08); margin-top: 16px; }
+    ul { line-height: 1.8; }
+    button { margin-top: 18px; border: none; border-radius: 24px; padding: 12px 20px; background: #28a745; color: #fff; cursor: pointer; }
   </style>
 </head>
-
 <body>
-
-<!-- NAVBAR -->
-<nav>
-  <div class="logo">🌿 CalmLearn</div>
-  <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="experiment.html">Experiment</a></li>
-    <!-- <li><a href="learn.html">Learn</a></li> -->
-    <li><a href="quiz.html">Quiz</a></li>
-    <li><a href="results.html">Results</a></li>
-  </ul>
-  <button id="accessBtn">♿ Accessibility</button>
-</nav>
-
-<div class="container">
-
-  <h1>Choose a Learning Method</h1>
-  <p>
-    You will study the same topic using one learning method.
-    After learning, you will answer the same quiz.
-    Your time and score will be recorded.
-  </p>
-
-  <div class="methods">
-
-    <!-- TEXTBOOK -->
-    <div class="method-card">
-      <h2>📘 Textbook Method</h2>
-      <p>
-        Traditional learning with long text and time pressure.
-      </p>
-      <button class="textbook-btn" onclick="startExperiment('textbook')">
-        Start Learning
-      </button>
+  <div class="container">
+    <h1>Experiment Instructions</h1>
+    <div class="card">
+      <ul>
+        <li>Participants complete the baseline assessment first.</li>
+        <li>Both methods are completed in randomized order.</li>
+        <li>Each method is followed by a reworded quiz and post-quiz check-in.</li>
+        <li>Results are kept for researcher analysis and not shown to participants.</li>
+      </ul>
+      <button onclick="window.location.href='pretest.html'">Go To Baseline Assessment</button>
     </div>
-
-    <!-- CALMLEARN -->
-    <div class="method-card">
-      <h2>🌿 CalmLearn Method</h2>
-      <p>
-        Calm, guided learning with visuals and no pressure.
-      </p>
-      <button class="calmlearn-btn" onclick="startExperiment('calmlearn')">
-        Start Learning
-      </button>
-    </div>
-
   </div>
-
-  <footer>
-    CalmLearn © 2026 • Experimental Learning Study
-  </footer>
-
-</div>
-
-<script>
-  function startExperiment(method) {
-    // Clear previous data
-    localStorage.clear();
-
-    // Store chosen method
-    localStorage.setItem("learningMethod", method);
-
-    // Store experiment start time
-    localStorage.setItem("experimentStart", Date.now());
-
-    // Redirect based on method
-    if (method === "textbook") {
-      window.location.href = "textbook.html";
-    } else {
-      window.location.href = "calm.html";
-    }
-  }
-</script>
-
 </body>
 </html>
