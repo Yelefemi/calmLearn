@@ -28,7 +28,7 @@ th{position:sticky;top:0;background:#edf5ff;color:#123;z-index:1;}
 <div class="container">
   <h1>Researcher Dashboard</h1>
   <div class="card">
-    Persisted records from Postgres. This view supports 50+ participants.
+    Data loaded from Google Sheets.
     <div id="status">Loading...</div>
   </div>
 
@@ -70,16 +70,16 @@ th{position:sticky;top:0;background:#edf5ff;color:#123;z-index:1;}
   </div>
 </div>
 
+<script src="sheets-config.js"></script>
 <script>
 const RESEARCHER_KEY_STORAGE = "researcherKey";
 const researcherKey = sessionStorage.getItem(RESEARCHER_KEY_STORAGE);
+const scriptUrl = (window.CALMLEARN_SHEETS_URL || "").trim();
 
-if (!researcherKey) {
-  window.location.href = "researcher-login.html";
-}
-
-function authHeaders() {
-  return { "x-researcher-key": researcherKey };
+if (!researcherKey) window.location.href = "researcher-login.html";
+if (!scriptUrl) {
+  document.getElementById("status").textContent = "Google Sheets endpoint missing in sheets-config.js.";
+  document.getElementById("status").style.color = "#c30000";
 }
 
 function asNum(value) {
@@ -157,10 +157,12 @@ function renderTable(rows) {
 
 async function loadData() {
   const status = document.getElementById("status");
-  status.textContent = "Loading...";
+  if (!scriptUrl) return;
 
+  status.textContent = "Loading...";
   try {
-    const response = await fetch("/api/submissions", { headers: authHeaders() });
+    const url = `${scriptUrl}?action=list&key=${encodeURIComponent(researcherKey)}`;
+    const response = await fetch(url);
     if (response.status === 401) {
       sessionStorage.removeItem(RESEARCHER_KEY_STORAGE);
       window.location.href = "researcher-login.html";
@@ -177,13 +179,15 @@ async function loadData() {
     status.textContent = `Loaded ${rows.length} participant record(s).`;
     status.style.color = "#19733b";
   } catch (_err) {
-    status.textContent = "Failed to load records. Confirm server is running and researcher key is valid.";
+    status.textContent = "Failed to load records. Check Apps Script URL and permissions.";
     status.style.color = "#c30000";
   }
 }
 
 async function downloadCsv() {
-  const response = await fetch("/api/submissions.csv", { headers: authHeaders() });
+  if (!scriptUrl) return;
+  const url = `${scriptUrl}?action=csv&key=${encodeURIComponent(researcherKey)}`;
+  const response = await fetch(url);
   if (response.status === 401) {
     sessionStorage.removeItem(RESEARCHER_KEY_STORAGE);
     window.location.href = "researcher-login.html";
@@ -195,14 +199,14 @@ async function downloadCsv() {
   }
 
   const blob = await response.blob();
-  const url = URL.createObjectURL(blob);
+  const objectUrl = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url;
+  a.href = objectUrl;
   a.download = "calmlearn_submissions.csv";
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
+  URL.revokeObjectURL(objectUrl);
 }
 
 function logout() {

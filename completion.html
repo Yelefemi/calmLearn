@@ -42,6 +42,7 @@
     </div>
   </div>
 
+<script src="sheets-config.js"></script>
 <script>
 function getNum(key) {
   const raw = localStorage.getItem(key);
@@ -52,8 +53,16 @@ function getNum(key) {
 
 async function submitParticipantRecord() {
   const statusEl = document.getElementById("saveStatus");
+  const scriptUrl = (window.CALMLEARN_SHEETS_URL || "").trim();
+
+  if (!scriptUrl) {
+    statusEl.textContent = "Google Sheets endpoint not configured. Set it in sheets-config.js.";
+    statusEl.style.color = "#c30000";
+    return;
+  }
 
   const payload = {
+    action: "submit",
     participant_id: localStorage.getItem("participantId"),
     topic: localStorage.getItem("activeTopic") || "Photosynthesis",
     method_order: JSON.parse(localStorage.getItem("methodOrder") || "[]"),
@@ -91,20 +100,17 @@ async function submitParticipantRecord() {
   }
 
   try {
-    const response = await fetch("/api/submissions", {
+    const response = await fetch(scriptUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     });
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.error || "save failed");
-    }
+    if (!response.ok) throw new Error("save failed");
 
     statusEl.textContent = "Responses saved successfully.";
     statusEl.style.color = "#19733b";
-  } catch (err) {
+  } catch (_err) {
     statusEl.textContent = "Save failed. Keep this browser open and inform the researcher.";
     statusEl.style.color = "#c30000";
   }

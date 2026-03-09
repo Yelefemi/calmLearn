@@ -1,44 +1,64 @@
-# CalmLearn on Vercel + Postgres
+# CalmLearn with Google Sheets
 
-This project now stores participant records in a managed Postgres database,
-which works on Vercel.
+This project now stores participant data directly in Google Sheets via Google Apps Script.
 
-## Required environment variables
-Set these in Vercel Project Settings -> Environment Variables:
+## 1) Configure frontend endpoint
+Open `sheets-config.js` and set:
 
-- `DATABASE_URL` = your Postgres connection string
-- `RESEARCHER_KEY` = researcher dashboard password/key
+```js
+window.CALMLEARN_SHEETS_URL = "https://script.google.com/macros/s/REPLACE_WITH_DEPLOYMENT_ID/exec";
+```
 
-If `RESEARCHER_KEY` is not set, default is `calmlearn-research-key`.
+## 2) Create Google Sheet + Apps Script
+1. Create a Google Sheet.
+2. Open Extensions -> Apps Script.
+3. Paste `google-sheets-apps-script/Code.gs` into script editor.
+4. Set `RESEARCHER_KEY` in the script.
+5. Deploy -> New Deployment -> Web app.
 
-## Deploy to Vercel
-1. Push this repo to GitHub.
-2. Import repo into Vercel.
-3. Add env vars (`DATABASE_URL`, `RESEARCHER_KEY`).
-4. Redeploy.
+Deployment settings:
+- Execute as: `Me`
+- Who has access: `Anyone`
 
-## Local development
-1. Create `.env.local` with:
-   - `DATABASE_URL=...`
-   - `RESEARCHER_KEY=...`
-2. Install deps:
-   - `npm install`
-3. Run locally with Vercel runtime:
-   - `npm run dev`
-4. Open:
-   - `http://localhost:3000/index.html`
+Copy the Web App URL and put it in `sheets-config.js`.
 
-## API routes
-- `POST /api/submissions` (participant save)
-- `GET /api/submissions` (researcher only)
-- `GET /api/submissions.csv` (researcher only)
-- `GET /api/researcher/verify` (researcher only)
-- `GET /api/health`
+## 3) Data headers (sheet columns)
+Use this exact header order (auto-created by script if sheet is empty):
 
-## Researcher access
-- Login: `http://localhost:3000/researcher-login.html`
-- Dashboard: `http://localhost:3000/dashboard.html`
+1. `id`
+2. `participant_id`
+3. `created_at`
+4. `topic`
+5. `method_order`
+6. `age_range`
+7. `learning_style`
+8. `baseline_stress`
+9. `baseline_confidence`
+10. `baseline_reading_comfort`
+11. `textbook_reading_time`
+12. `textbook_quiz_time`
+13. `textbook_score`
+14. `textbook_quiz_total`
+15. `textbook_post_stress`
+16. `textbook_post_confidence`
+17. `calm_breathing_pre_stress`
+18. `calm_breathing_post_stress`
+19. `calm_reading_time`
+20. `calm_quiz_time`
+21. `calm_score`
+22. `calm_quiz_total`
+23. `calm_post_stress`
+24. `calm_post_confidence`
+25. `participant_started_at`
+26. `participant_completed_at`
 
-## Notes
-- Database table is auto-created on first API call.
-- This supports 50+ participants easily.
+## 4) Researcher access
+- Researcher login page: `researcher-login.html`
+- Dashboard: `dashboard.html`
+- Researcher key used at login must match `RESEARCHER_KEY` in Apps Script.
+
+## 5) Endpoints used by frontend
+- `POST <script_url>` with payload for submission
+- `GET <script_url>?action=verify&key=...`
+- `GET <script_url>?action=list&key=...`
+- `GET <script_url>?action=csv&key=...`
