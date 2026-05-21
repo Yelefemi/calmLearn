@@ -46,6 +46,15 @@
     .refs { margin-top: 24px; padding: 16px; border: 1px solid #d9e9ff; border-radius: 10px; background: #fbfdff; }
     .refs h3 { color: #0b5ed7; margin-bottom: 8px; }
     .refs p { margin-bottom: 8px; font-size: 0.95rem; }
+    .audio-btn {
+      border: none;
+      border-radius: 18px;
+      padding: 8px 14px;
+      cursor: pointer;
+      background: #28a745;
+      color: #fff;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
@@ -56,7 +65,7 @@
 
 <div class="container">
   <div class="intro">
-    <h1>Photosynthesis</h1>
+    <h1 id="topicTitle">Topic</h1>
     <p>
       This track presents the same textbook content in guided steps with visuals as learning aids.
     </p>
@@ -129,11 +138,12 @@
 
   <div class="refs">
     <h3>References</h3>
-    <p>OpenStax Biology 2e: https://openstax.org/books/biology-2e/pages/8-1-overview-of-photosynthesis</p>
-    <p>Khan Academy: https://www.khanacademy.org/science/biology/photosynthesis-in-plants</p>
+    <div id="refsList"></div>
   </div>
 </div>
 
+<script src="curriculum.js"></script>
+<script src="audio-reader.js"></script>
 <script>
   const order = JSON.parse(localStorage.getItem("methodOrder") || "[]");
   const idx = Number(localStorage.getItem("currentMethodIndex") || "0");
@@ -143,6 +153,90 @@
   const startTime = Date.now();
   let currentStep = 0;
   const steps = document.querySelectorAll(".step");
+  const selection = window.CalmLearnCurriculum.getActiveSelection();
+  const topic = selection.topic;
+
+  function pickVisualTokens(stepText, subjectLabel) {
+    const text = stepText.toLowerCase();
+    if (subjectLabel === "Maths") {
+      if (text.includes("shape") || text.includes("angle") || text.includes("area") || text.includes("perimeter")) return { emojiA: "📐", emojiB: "🔺", object: "shape board" };
+      if (text.includes("data") || text.includes("chart") || text.includes("probability")) return { emojiA: "📊", emojiB: "🎲", object: "data chart" };
+      return { emojiA: "➕", emojiB: "🔢", object: "number blocks" };
+    }
+    if (subjectLabel === "Science") {
+      if (text.includes("cell") || text.includes("living")) return { emojiA: "🔬", emojiB: "🧫", object: "microscope lab" };
+      if (text.includes("earth") || text.includes("weather") || text.includes("space")) return { emojiA: "🌍", emojiB: "☁️", object: "earth model" };
+      if (text.includes("energy") || text.includes("matter") || text.includes("reaction")) return { emojiA: "⚗️", emojiB: "⚡", object: "science experiment" };
+      return { emojiA: "🧪", emojiB: "🌱", object: "science activity" };
+    }
+    if (text.includes("sentence") || text.includes("grammar") || text.includes("punctuation")) return { emojiA: "✍️", emojiB: "📝", object: "writing notebook" };
+    if (text.includes("read") || text.includes("passage") || text.includes("idea")) return { emojiA: "📖", emojiB: "💡", object: "reading book" };
+    return { emojiA: "🗣️", emojiB: "📚", object: "language cards" };
+  }
+
+  function createToonStepImage(topicTitle, subjectLabel, stepNumber, accent, stepBody) {
+    const tokens = pickVisualTokens(stepBody, subjectLabel);
+    const snippet = (stepBody || "").replace(/\s+/g, " ").trim().slice(0, 78);
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#f4fbff"/>
+            <stop offset="100%" stop-color="#e6f6ff"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="700" fill="url(#bg)"/>
+        <circle cx="180" cy="150" r="90" fill="${accent}" opacity="0.25"/>
+        <circle cx="1020" cy="120" r="70" fill="${accent}" opacity="0.2"/>
+        <rect x="80" y="450" width="1040" height="190" rx="30" fill="#ffffff" stroke="${accent}" stroke-width="6"/>
+        <text x="120" y="515" font-size="46" font-family="Poppins, sans-serif" fill="#0b5ed7" font-weight="700">${subjectLabel} • Step ${stepNumber}</text>
+        <text x="120" y="562" font-size="34" font-family="Poppins, sans-serif" fill="#1f3552">${topicTitle}</text>
+        <text x="120" y="605" font-size="26" font-family="Poppins, sans-serif" fill="#35506f">${snippet}</text>
+        <g transform="translate(510 170)">
+          <circle cx="90" cy="90" r="85" fill="#ffd9b3" stroke="#1f3552" stroke-width="6"/>
+          <circle cx="62" cy="78" r="9" fill="#1f3552"/>
+          <circle cx="118" cy="78" r="9" fill="#1f3552"/>
+          <path d="M58 118 Q90 146 122 118" stroke="#1f3552" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <rect x="28" y="180" width="124" height="108" rx="20" fill="${accent}" stroke="#1f3552" stroke-width="6"/>
+          <rect x="-10" y="210" width="48" height="18" rx="9" fill="#ffd9b3"/>
+          <rect x="142" y="210" width="48" height="18" rx="9" fill="#ffd9b3"/>
+        </g>
+        <rect x="170" y="170" width="250" height="150" rx="22" fill="#ffffff" stroke="${accent}" stroke-width="5"/>
+        <text x="195" y="230" font-size="30" font-family="Poppins, sans-serif" fill="#1f3552">${tokens.object}</text>
+        <text x="225" y="295" font-size="88">${tokens.emojiA}</text>
+        <text x="915" y="300" font-size="120">${tokens.emojiB}</text>
+      </svg>
+    `;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  }
+
+  if (topic) {
+    document.getElementById("topicTitle").textContent = topic.title;
+    const titles = document.querySelectorAll(".step h2");
+    const bodies = document.querySelectorAll(".step p");
+    const hints = document.querySelectorAll(".step .hint");
+    const images = document.querySelectorAll(".step .image-wrap img");
+    const accentBySubject = {
+      English: "#ff8a3d",
+      Maths: "#00a389",
+      Science: "#6f7cff"
+    };
+    const accent = accentBySubject[topic.subjectLabel] || "#28a745";
+
+    topic.guidedSteps.forEach((step, i) => {
+      if (titles[i]) titles[i].textContent = step.heading;
+      if (bodies[i]) bodies[i].textContent = step.body;
+      if (hints[i]) hints[i].textContent = step.hint;
+      if (images[i]) {
+        images[i].src = createToonStepImage(topic.title, topic.subjectLabel || "Learning", i + 1, accent, step.body);
+        images[i].alt = `Cartoon visual for ${topic.title} step ${i + 1}`;
+      }
+    });
+    document.getElementById("refsList").innerHTML = (topic.references || [])
+      .map((reference) => `<p>${reference}</p>`)
+      .join("");
+  }
+  window.CalmLearnAudioReader.mountControls(["#topicTitle", ".step h2", ".step p", ".step .hint"], ".intro");
 
   function nextStep() {
     steps[currentStep].classList.remove("active");

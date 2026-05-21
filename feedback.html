@@ -19,6 +19,7 @@
   .question h3{margin-bottom:10px;}
   label{display:block;margin-bottom:8px;cursor:pointer;}
   .submit-btn{display:block;margin:24px auto;padding:14px 32px;border-radius:30px;border:none;background:#28a745;color:#fff;font-size:1rem;cursor:pointer;}
+  .audio-btn{border:none;border-radius:18px;padding:8px 14px;cursor:pointer;background:#28a745;color:#fff;font-size:.85rem;}
 </style>
 </head>
 <body>
@@ -43,7 +44,7 @@
     </div>
 
     <div class="question">
-      <h3>How confident are you about photosynthesis now?</h3>
+      <h3 id="confidencePrompt">How confident are you about this topic now?</h3>
       <label><input type="radio" name="postConfidence" value="1"> 1</label>
       <label><input type="radio" name="postConfidence" value="2"> 2</label>
       <label><input type="radio" name="postConfidence" value="3"> 3</label>
@@ -55,11 +56,18 @@
   </form>
 </div>
 
+<script src="curriculum.js"></script>
+<script src="audio-reader.js"></script>
 <script>
 const method = localStorage.getItem("currentMethod") || "textbook";
 const order = JSON.parse(localStorage.getItem("methodOrder") || "[\"textbook\",\"calmlearn\"]");
 const currentIndex = Number(localStorage.getItem("currentMethodIndex") || "0");
 document.getElementById("roundPill").textContent = `Round ${currentIndex + 1} of ${order.length}`;
+const selection = window.CalmLearnCurriculum.getActiveSelection();
+if (selection.topic) {
+  document.getElementById("confidencePrompt").textContent = `How confident are you about ${selection.topic.title} now?`;
+}
+window.CalmLearnAudioReader.mountControls(["h1", "p", ".scale-note", ".question h3", ".question label"], ".container");
 
 function submitFeedback(){
   const stress = document.querySelector('input[name="postStress"]:checked');

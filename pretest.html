@@ -47,6 +47,15 @@ select {
   background: #28a745; color: #fff; font-size: 1rem; cursor: pointer; opacity: 0.5; pointer-events: none;
 }
 .start-btn.enabled { opacity: 1; pointer-events: auto; }
+.audio-btn {
+  border: none;
+  border-radius: 18px;
+  padding: 8px 14px;
+  cursor: pointer;
+  background: #28a745;
+  color: #fff;
+  font-size: 0.85rem;
+}
 </style>
 </head>
 <body>
@@ -68,7 +77,7 @@ select {
 <div class="container">
   <h1>Pre-Learning Assessment</h1>
   <p class="subtitle">
-    Topic for this study: <strong>Photosynthesis</strong>.
+    Choose your age group, subject, and topic for this study.
     You will complete both learning methods in randomized order.
   </p>
 
@@ -78,13 +87,23 @@ select {
   </div>
 
   <div class="section">
-    <label for="ageRange">Age Range</label>
-    <select id="ageRange">
-      <option value="">Select age range</option>
-      <option value="under-18">Under 18</option>
-      <option value="18-24">18-24</option>
-      <option value="25-34">25-34</option>
-      <option value="35-plus">35+</option>
+    <label for="ageGroup">Age Group</label>
+    <select id="ageGroup">
+      <option value="">Select age group</option>
+    </select>
+  </div>
+
+  <div class="section">
+    <label for="subject">Subject</label>
+    <select id="subject">
+      <option value="">Select subject</option>
+    </select>
+  </div>
+
+  <div class="section">
+    <label for="topic">Topic</label>
+    <select id="topic">
+      <option value="">Select topic</option>
     </select>
   </div>
 
@@ -111,7 +130,7 @@ select {
   </div>
 
   <div class="section">
-    <h3>How confident are you about photosynthesis?</h3>
+    <h3 id="baselineConfidencePrompt">How confident are you about this topic?</h3>
     <div class="scale" id="confidenceScale">
       <button onclick="selectValue('confidence',1)" type="button">1</button>
       <button onclick="selectValue('confidence',2)" type="button">2</button>
@@ -122,7 +141,7 @@ select {
   </div>
 
   <div class="section">
-    <h3>How comfortable are you reading long science text?</h3>
+    <h3>How comfortable are you reading longer learning text?</h3>
     <div class="scale" id="readingScale">
       <button onclick="selectValue('reading',1)" type="button">1</button>
       <button onclick="selectValue('reading',2)" type="button">2</button>
@@ -135,6 +154,8 @@ select {
   <button class="start-btn" id="startBtn" type="button">Begin Study Flow</button>
 </div>
 
+<script src="curriculum.js"></script>
+<script src="audio-reader.js"></script>
 <script>
 const accessBtn = document.getElementById("accessBtn");
 const panel = document.getElementById("accessibilityPanel");
@@ -174,14 +195,75 @@ function selectValue(type, value) {
 }
 
 function checkReady() {
-  const ageRange = document.getElementById("ageRange").value;
+  const ageGroup = document.getElementById("ageGroup").value;
+  const subject = document.getElementById("subject").value;
+  const topic = document.getElementById("topic").value;
   const learningStyle = document.getElementById("learningStyle").value;
-  if (responses.stress && responses.confidence && responses.reading && ageRange && learningStyle) {
+  if (responses.stress && responses.confidence && responses.reading && ageGroup && subject && topic && learningStyle) {
     document.getElementById("startBtn").classList.add("enabled");
   }
 }
 
-document.getElementById("ageRange").addEventListener("change", checkReady);
+function fillAgeGroups() {
+  const ageGroupEl = document.getElementById("ageGroup");
+  const groups = window.CalmLearnCurriculum.getAgeGroups();
+  groups.forEach((group) => {
+    const option = document.createElement("option");
+    option.value = group.id;
+    option.textContent = group.label;
+    ageGroupEl.appendChild(option);
+  });
+}
+
+function fillSubjects(ageGroupId) {
+  const subjectEl = document.getElementById("subject");
+  subjectEl.innerHTML = '<option value="">Select subject</option>';
+  document.getElementById("topic").innerHTML = '<option value="">Select topic</option>';
+  if (!ageGroupId) return;
+
+  const subjects = window.CalmLearnCurriculum.getSubjects(ageGroupId);
+  subjects.forEach((subject) => {
+    const option = document.createElement("option");
+    option.value = subject.id;
+    option.textContent = subject.label;
+    subjectEl.appendChild(option);
+  });
+}
+
+function fillTopics(ageGroupId, subjectId) {
+  const topicEl = document.getElementById("topic");
+  topicEl.innerHTML = '<option value="">Select topic</option>';
+  if (!ageGroupId || !subjectId) return;
+
+  const subject = window.CalmLearnCurriculum.getSubject(ageGroupId, subjectId);
+  (subject?.topics || []).forEach((topic) => {
+    const option = document.createElement("option");
+    option.value = topic.id;
+    option.textContent = topic.title;
+    topicEl.appendChild(option);
+  });
+}
+
+document.getElementById("ageGroup").addEventListener("change", (e) => {
+  fillSubjects(e.target.value);
+  document.getElementById("baselineConfidencePrompt").textContent = "How confident are you about this topic?";
+  checkReady();
+});
+document.getElementById("subject").addEventListener("change", (e) => {
+  fillTopics(document.getElementById("ageGroup").value, e.target.value);
+  document.getElementById("baselineConfidencePrompt").textContent = "How confident are you about this topic?";
+  checkReady();
+});
+document.getElementById("topic").addEventListener("change", () => {
+  const ageGroupId = document.getElementById("ageGroup").value;
+  const subjectId = document.getElementById("subject").value;
+  const topicId = document.getElementById("topic").value;
+  const topic = window.CalmLearnCurriculum.getTopic(ageGroupId, subjectId, topicId);
+  if (topic) {
+    document.getElementById("baselineConfidencePrompt").textContent = `How confident are you about ${topic.title}?`;
+  }
+  checkReady();
+});
 document.getElementById("learningStyle").addEventListener("change", checkReady);
 
 document.getElementById("startBtn").onclick = function () {
@@ -194,9 +276,18 @@ document.getElementById("startBtn").onclick = function () {
   localStorage.setItem("baselineStress", responses.stress);
   localStorage.setItem("baselineConfidence", responses.confidence);
   localStorage.setItem("baselineReadingComfort", responses.reading);
-  localStorage.setItem("participantAgeRange", document.getElementById("ageRange").value);
+  const ageGroupId = document.getElementById("ageGroup").value;
+  const subjectId = document.getElementById("subject").value;
+  const topicId = document.getElementById("topic").value;
+  const ageGroup = window.CalmLearnCurriculum.getAgeGroup(ageGroupId);
+  const topic = window.CalmLearnCurriculum.getTopic(ageGroupId, subjectId, topicId);
+
+  localStorage.setItem("participantAgeGroup", ageGroupId);
+  localStorage.setItem("participantAgeRange", ageGroup?.label || ageGroupId);
+  localStorage.setItem("activeSubject", subjectId);
+  localStorage.setItem("activeTopicId", topicId);
+  localStorage.setItem("activeTopic", topic?.title || "General Topic");
   localStorage.setItem("participantLearningStyle", document.getElementById("learningStyle").value);
-  localStorage.setItem("activeTopic", "Photosynthesis");
   localStorage.setItem("participantStartedAt", Date.now());
   const participantId = `P-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
   localStorage.setItem("participantId", participantId);
@@ -208,6 +299,9 @@ document.getElementById("startBtn").onclick = function () {
 
   window.location.href = methodOrder[0] === "textbook" ? "textbook.html" : "calm.html";
 };
+
+fillAgeGroups();
+window.CalmLearnAudioReader.mountControls(["h1", ".subtitle", ".section label", ".section h3", ".scale-note"], ".container");
 </script>
 </body>
 </html>

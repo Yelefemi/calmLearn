@@ -30,6 +30,15 @@
     .refs { margin-top: 28px; padding: 16px; border: 1px solid #d9e9ff; border-radius: 10px; background: #fbfdff; }
     .refs h3 { color: #0b5ed7; margin-bottom: 8px; }
     .refs p { margin-bottom: 8px; font-size: 0.95rem; }
+    .audio-btn {
+      border: none;
+      border-radius: 18px;
+      padding: 8px 14px;
+      cursor: pointer;
+      background: #28a745;
+      color: #fff;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
@@ -44,41 +53,23 @@
     <strong>Instruction:</strong> Read the full passage carefully. This same content is presented in the CalmLearn track with image support.
   </div>
 
-  <h1>Photosynthesis</h1>
-
-  <p>
-    Photosynthesis is the process by which green plants make their own food, mainly in the leaves.
-    A molecule called chlorophyll captures light energy from the sun. That light energy powers a reaction
-    that combines carbon dioxide from the air with water absorbed from the soil.
-  </p>
-
-  <p>
-    The product of this reaction is glucose, a sugar that stores chemical energy for the plant.
-    Plants use glucose to grow and maintain cells, and they can also store excess glucose for later use.
-    This is why photosynthesis is often described as turning light energy into chemical energy.
-  </p>
-
-  <p>
-    Oxygen is released as a by-product when water molecules are split during the process.
-    A common summary equation is 6 CO2 + 6 H2O + light -> C6H12O6 + 6 O2.
-    This equation shows that carbon dioxide and water are transformed into glucose and oxygen using light.
-  </p>
-
-  <p>
-    Photosynthesis is essential for life on Earth because it supports food webs and helps maintain atmospheric oxygen.
-    Many organisms depend directly or indirectly on plant-produced food, and many also depend on oxygen released by plants.
-    For this reason, plants are often called vital regulators of ecosystem stability.
-  </p>
+  <h1 id="topicTitle">Topic</h1>
+  <p id="topicIntro"></p>
+  <p id="p1"></p>
+  <p id="p2"></p>
+  <p id="p3"></p>
+  <p id="p4"></p>
 
   <button class="next-btn" onclick="goToQuiz()">Proceed To Quiz</button>
 
   <div class="refs">
     <h3>References</h3>
-    <p>OpenStax Biology 2e: https://openstax.org/books/biology-2e/pages/8-1-overview-of-photosynthesis</p>
-    <p>Britannica Photosynthesis: https://www.britannica.com/science/photosynthesis</p>
+    <div id="refsList"></div>
   </div>
 </div>
 
+<script src="curriculum.js"></script>
+<script src="audio-reader.js"></script>
 <script>
   const order = JSON.parse(localStorage.getItem("methodOrder") || "[]");
   const idx = Number(localStorage.getItem("currentMethodIndex") || "0");
@@ -86,6 +77,20 @@
   document.getElementById("roundPill").textContent = `Round ${round} of ${order.length || 2}`;
   document.getElementById("methodOrderInfo").textContent =
     `Assigned order: ${(order[0] || "textbook")} -> ${(order[1] || "calmlearn")}.`;
+  const selection = window.CalmLearnCurriculum.getActiveSelection();
+  const topic = selection.topic;
+  if (topic) {
+    document.getElementById("topicTitle").textContent = topic.textbookTitle;
+    document.getElementById("topicIntro").textContent = topic.textbookIntro;
+    document.getElementById("p1").textContent = topic.textbookParagraphs[0] || "";
+    document.getElementById("p2").textContent = topic.textbookParagraphs[1] || "";
+    document.getElementById("p3").textContent = topic.textbookParagraphs[2] || "";
+    document.getElementById("p4").textContent = topic.textbookParagraphs[3] || "";
+    document.getElementById("refsList").innerHTML = (topic.references || [])
+      .map((reference) => `<p>${reference}</p>`)
+      .join("");
+  }
+  window.CalmLearnAudioReader.mountControls(["#topicTitle", "#topicIntro", "#p1", "#p2", "#p3", "#p4"], ".meta");
 
   const readingStart = Date.now();
 

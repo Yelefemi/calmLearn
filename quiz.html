@@ -30,12 +30,21 @@
       border-radius: 30px; border: none; background: #28a745;
       color: #fff; font-size: 1rem; cursor: pointer;
     }
+    .audio-btn {
+      border: none;
+      border-radius: 18px;
+      padding: 8px 14px;
+      cursor: pointer;
+      background: #28a745;
+      color: #fff;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
 
 <nav>
-  <h2>Photosynthesis Quiz</h2>
+  <h2 id="quizNavTitle">Topic Quiz</h2>
   <div class="timer">Time Left: <span id="time">05:00</span></div>
 </nav>
 
@@ -46,96 +55,36 @@
   <button type="button" class="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
 </div>
 
+<script src="curriculum.js"></script>
+<script src="audio-reader.js"></script>
 <script>
   const method = localStorage.getItem("currentMethod") || "textbook";
   const methodIndex = Number(localStorage.getItem("currentMethodIndex") || "0");
   const round = methodIndex + 1;
   document.getElementById("metaText").textContent = `Round ${round} of 2 | Method: ${method}`;
-
-  const questionBank = [
-    {
-      id: "q1",
-      answer: "b",
-      variants: [
-        { prompt: "What is photosynthesis?", options: ["A way plants breathe", "How plants make food", "How animals eat"] },
-        { prompt: "Which chemical process do plants use to create food?", options: ["Respiration", "Photosynthesis", "Fermentation"] }
-      ]
-    },
-    {
-      id: "q2",
-      answer: "a",
-      variants: [
-        { prompt: "Which of these is needed for photosynthesis?", options: ["Sunlight", "Meat", "Plastic"] },
-        { prompt: "Which resource provides energy input for photosynthesis?", options: ["Sunlight", "Sand", "Metal"] }
-      ]
-    },
-    {
-      id: "q3",
-      answer: "b",
-      variants: [
-        { prompt: "What gas is released during photosynthesis?", options: ["Carbon dioxide", "Oxygen", "Nitrogen"] },
-        { prompt: "Which gas do plants release as an output of photosynthesis?", options: ["Hydrogen", "Oxygen", "Helium"] }
-      ]
-    },
-    {
-      id: "q4",
-      answer: "b",
-      variants: [
-        { prompt: "Where in the plant does photosynthesis mainly occur?", options: ["Roots", "Leaves", "Stem"] },
-        { prompt: "Which plant part performs most photosynthesis?", options: ["Flower", "Leaves", "Bark"] }
-      ]
-    },
-    {
-      id: "q5",
-      answer: "b",
-      variants: [
-        { prompt: "Which pigment gives leaves their green color?", options: ["Hemoglobin", "Chlorophyll", "Melanin"] },
-        { prompt: "What light-absorbing pigment is central to photosynthesis?", options: ["Keratin", "Chlorophyll", "Collagen"] }
-      ]
-    },
-    {
-      id: "q6",
-      answer: "b",
-      variants: [
-        { prompt: "What do plants take in from the soil for photosynthesis?", options: ["Carbon dioxide", "Water", "Oxygen"] },
-        { prompt: "Which input is absorbed through roots for photosynthesis?", options: ["Chlorine", "Water", "Ozone"] }
-      ]
-    },
-    {
-      id: "q7",
-      answer: "b",
-      variants: [
-        { prompt: "Which of the following is NOT directly required for photosynthesis?", options: ["Sunlight", "Soil", "Carbon dioxide"] },
-        { prompt: "Which item is not a direct reactant in photosynthesis?", options: ["Water", "Soil", "Carbon dioxide"] }
-      ]
-    },
-    {
-      id: "q8",
-      answer: "a",
-      variants: [
-        { prompt: "What happens to extra sugar produced by photosynthesis?", options: ["It is stored in the plant", "It turns into water", "It disappears"] },
-        { prompt: "When plants make surplus glucose, what do they commonly do with it?", options: ["Store it", "Burn it immediately", "Release it as gas"] }
-      ]
-    },
-    {
-      id: "q9",
-      answer: "c",
-      variants: [
-        { prompt: "Which organisms benefit directly from oxygen released by plants?", options: ["Plants only", "Animals only", "Plants and animals"] },
-        { prompt: "Who can use oxygen generated during photosynthesis?", options: ["Only fungi", "Only bacteria", "Many organisms including animals and plants"] }
-      ]
-    },
-    {
-      id: "q10",
-      answer: "a",
-      variants: [
-        { prompt: "Why are plants sometimes called lungs of the planet?", options: ["They help cycle gases by taking in CO2 and releasing O2", "They produce smoke", "They absorb all water"] },
-        { prompt: "What best explains the phrase 'plants are lungs of Earth'?", options: ["They support atmospheric oxygen through gas exchange", "They create clouds", "They produce minerals"] }
-      ]
-    }
+  const selection = window.CalmLearnCurriculum.getActiveSelection();
+  const topic = selection.topic;
+  if (topic) document.getElementById("quizNavTitle").textContent = topic.quizTitle;
+  const fallbackQuestions = [
+    { prompt: "What helps learners understand a topic better?", options: ["Clear explanations and practice", "Skipping lessons", "Ignoring feedback"], answer: "a" },
+    { prompt: "Why is reviewing key ideas useful?", options: ["It improves retention", "It reduces understanding", "It replaces learning"], answer: "a" },
+    { prompt: "What is a good study habit?", options: ["Read, practice, and self-check", "Memorize without meaning", "Avoid questions"], answer: "a" },
+    { prompt: "What should you do when unsure?", options: ["Re-read and use examples", "Guess and move on always", "Skip the topic"], answer: "a" },
+    { prompt: "Why are quizzes used in learning?", options: ["To check understanding", "To remove topics", "To replace lessons"], answer: "a" },
+    { prompt: "What supports confidence in learning?", options: ["Small consistent progress", "No practice", "Random reading"], answer: "a" },
+    { prompt: "Why should answers be evidence-based?", options: ["It improves accuracy", "It makes answers shorter only", "It avoids meaning"], answer: "a" },
+    { prompt: "What is the value of feedback?", options: ["It helps improve performance", "It ends learning", "It removes reflection"], answer: "a" },
+    { prompt: "What does applying knowledge mean?", options: ["Using ideas in tasks", "Only reading titles", "Avoiding examples"], answer: "a" },
+    { prompt: "What is the best next step after learning?", options: ["Practice and reflect", "Stop immediately", "Ignore results"], answer: "a" }
   ];
 
   const letters = ["a", "b", "c"];
+  const sourceQuestions = (topic?.questions && topic.questions.length) ? topic.questions : fallbackQuestions;
+  const questionBank = sourceQuestions.map((item, i) => ({
+    id: `q${i + 1}`,
+    correctText: item.options[letters.indexOf(item.answer)] || item.options[0],
+    variants: [{ prompt: item.prompt, options: item.options }]
+  }));
 
   function shuffle(arr) {
     const copy = [...arr];
@@ -147,9 +96,13 @@
   }
 
   const renderedQuestions = shuffle(questionBank).map((q, idx) => {
-    const version = q.variants[methodIndex % 2];
-    const options = version.options.map((label, i) => ({ value: letters[i], label }));
-    return { ...q, index: idx + 1, prompt: version.prompt, options };
+    const version = q.variants[methodIndex % q.variants.length] || q.variants[0];
+    const options = shuffle(version.options.map((label) => ({ label }))).map((option, i) => ({
+      value: letters[i],
+      label: option.label
+    }));
+    const answer = options.find((option) => option.label === q.correctText)?.value || "a";
+    return { ...q, index: idx + 1, prompt: version.prompt, answer, options };
   });
 
   const quizForm = document.getElementById("quizForm");
@@ -169,6 +122,7 @@
 
     quizForm.appendChild(box);
   });
+  window.CalmLearnAudioReader.mountControls(["#quizNavTitle", "h1", ".meta", ".question h3", ".question label"], ".container");
 
   let time = 300;
   const timerEl = document.getElementById("time");
