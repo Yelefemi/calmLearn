@@ -78,7 +78,7 @@
     { prompt: "What is the best next step after learning?", options: ["Practice and reflect", "Stop immediately", "Ignore results"], answer: "a" }
   ];
 
-  const letters = ["a", "b", "c"];
+  const letters = ["a", "b", "c", "d"];
   const sourceQuestions = (topic?.questions && topic.questions.length) ? topic.questions : fallbackQuestions;
   const questionBank = sourceQuestions.map((item, i) => ({
     id: `q${i + 1}`,
@@ -86,18 +86,63 @@
     variants: [{ prompt: item.prompt, options: item.options }]
   }));
 
-  function shuffle(arr) {
+  function hashString(value) {
+    let hash = 0;
+    for (let i = 0; i < value.length; i++) {
+      hash = ((hash << 5) - hash) + value.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  function seededRandom(seed) {
+    let value = seed % 2147483647;
+    if (value <= 0) value += 2147483646;
+    return function () {
+      value = value * 16807 % 2147483647;
+      return (value - 1) / 2147483646;
+    };
+  }
+
+  function shuffle(arr, randomFn = Math.random) {
     const copy = [...arr];
     for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = Math.floor(randomFn() * (i + 1));
       [copy[i], copy[j]] = [copy[j], copy[i]];
     }
     return copy;
   }
 
-  const renderedQuestions = shuffle(questionBank).map((q, idx) => {
+  function ensureFourOptions(options, correctText, qid) {
+    const unique = [];
+    options.forEach((option) => {
+      if (option && !unique.includes(option)) unique.push(option);
+    });
+
+    const extras = [
+      "None of the above",
+      "All of the above",
+      "It depends on the question",
+      "A different idea"
+    ];
+
+    let extraIndex = 0;
+    while (unique.length < 4) {
+      const candidate = extras[(hashString([qid, unique.length, extraIndex].join("|")) + extraIndex) % extras.length];
+      extraIndex += 1;
+      if (candidate !== correctText && !unique.includes(candidate)) unique.push(candidate);
+    }
+
+    return unique.slice(0, 4);
+  }
+
+  const shuffleSeed = hashString([method, methodIndex, topic?.id || "general"].join("|"));
+  const seeded = seededRandom(shuffleSeed || 1);
+  const renderedQuestions = shuffle(questionBank, seeded).map((q, idx) => {
     const version = q.variants[methodIndex % q.variants.length] || q.variants[0];
-    const options = shuffle(version.options.map((label) => ({ label }))).map((option, i) => ({
+    const optionSeed = seededRandom(hashString([method, methodIndex, q.id, "options"].join("|")) || 1);
+    const fourOptions = ensureFourOptions(version.options, q.correctText, q.id);
+    const options = shuffle(fourOptions.map((label) => ({ label })), optionSeed).map((option, i) => ({
       value: letters[i],
       label: option.label
     }));

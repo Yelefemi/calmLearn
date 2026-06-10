@@ -55,6 +55,49 @@
       color: #fff;
       font-size: 0.85rem;
     }
+    .tally-card {
+      margin: 18px 0;
+      border: 1px solid #d9e9ff;
+      border-radius: 16px;
+      padding: 18px;
+      background: linear-gradient(180deg, #fbfdff 0%, #f1f8ff 100%);
+    }
+    .tally-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .tally-item {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #e6f0ff;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .tally-item button {
+      align-self: flex-start;
+      border: none;
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: #0b5ed7;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .tally-mark {
+      font-family: monospace;
+      color: #0b5ed7;
+      letter-spacing: 2px;
+      margin-top: 8px;
+      min-height: 22px;
+    }
+    @media (max-width: 640px) {
+      .tally-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -69,6 +112,12 @@
     <p>
       This track presents the same textbook content in guided steps with visuals as learning aids.
     </p>
+  </div>
+
+  <div class="tally-card" id="tallyCard" style="display:none;">
+    <h2 style="color:#0b5ed7;margin-bottom:6px;">CalmLearn Tally Board</h2>
+    <p style="line-height:1.7;">Tap a tally when you recall the fact without looking. The marks help you see which ideas are sticking.</p>
+    <div class="tally-grid" id="tallyGrid"></div>
   </div>
 
   <div class="step active">
@@ -235,6 +284,49 @@
     document.getElementById("refsList").innerHTML = (topic.references || [])
       .map((reference) => `<p>${reference}</p>`)
       .join("");
+
+    const tallyCard = document.getElementById("tallyCard");
+    const tallyGrid = document.getElementById("tallyGrid");
+    const tallyItems = (topic.noteHighlights || []).map((label, index) => ({
+      id: `note-${index}`,
+      label,
+      count: 0
+    }));
+
+    if (tallyItems.length) {
+      tallyCard.style.display = "block";
+      const renderTally = (n) => {
+        const groups = Math.floor(n / 5);
+        const rem = n % 5;
+        let marks = "";
+        for (let g = 0; g < groups; g++) marks += "||||/ ";
+        for (let r = 0; r < rem; r++) marks += "|";
+        return marks || "—";
+      };
+      const updateCard = () => {
+        tallyGrid.innerHTML = "";
+        tallyItems.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "tally-item";
+          card.innerHTML = `
+            <div>
+              <strong>${item.label}</strong>
+              <div class="tally-mark" id="${item.id}">${renderTally(item.count)}</div>
+            </div>
+          `;
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = "+ tally";
+          button.onclick = () => {
+            item.count += 1;
+            document.getElementById(item.id).textContent = renderTally(item.count);
+          };
+          card.appendChild(button);
+          tallyGrid.appendChild(card);
+        });
+      };
+      updateCard();
+    }
   }
   window.CalmLearnAudioReader.mountControls(["#topicTitle", ".step h2", ".step p", ".step .hint"], ".intro");
 

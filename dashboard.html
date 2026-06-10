@@ -2,211 +2,346 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CalmLearn | Researcher Dashboard</title>
+<title>CalmLearn | Admin Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 *{box-sizing:border-box;font-family:Poppins,sans-serif;}
 body{margin:0;background:linear-gradient(135deg,#eaf6ff,#f7fbff);padding:24px;color:#234;}
-.container{max-width:1200px;margin:0 auto;}
-h1{color:#0b5ed7;}
-.card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,0.08);margin-bottom:14px;}
+.container{max-width:1440px;margin:0 auto;}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:16px;}
+h1{color:#0b5ed7;margin:0;}
+.card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 10px 24px rgba(0,0,0,0.08);margin-bottom:20px;}
 .controls{display:flex;gap:10px;flex-wrap:wrap;}
-button{border:none;border-radius:22px;padding:10px 16px;background:#0b5ed7;color:#fff;cursor:pointer;text-decoration:none;display:inline-block;}
+button{border:none;border-radius:22px;padding:10px 16px;background:#0b5ed7;color:#fff;cursor:pointer;font-size:0.9rem;font-weight:600;}
 button.secondary{background:#5b6e85;}
-.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
-.metric{background:#f5faff;border:1px solid #d7e9ff;border-radius:10px;padding:10px;}
-.metric .label{font-size:.85rem;color:#456;}
-.metric .value{font-weight:700;color:#0b5ed7;font-size:1.1rem;}
-.table-wrap{overflow:auto;max-height:60vh;border:1px solid #d7e9ff;border-radius:10px;}
-table{border-collapse:collapse;width:100%;min-width:1000px;background:#fff;}
-th,td{border-bottom:1px solid #edf4ff;padding:8px 10px;text-align:left;font-size:.88rem;white-space:nowrap;}
-th{position:sticky;top:0;background:#edf5ff;color:#123;z-index:1;}
-#status{font-size:.95rem;}
+button.ghost{background:#edf5ff;color:#0b5ed7;border:1px solid #cfe0ff;}
+button.active{background:#28a745;}
+button:hover{opacity:0.92;}
+button:disabled{opacity:0.6;cursor:not-allowed;}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+.metric{background:#f5faff;border:1px solid #d7e9ff;border-radius:10px;padding:16px;text-align:center;}
+.metric .label{font-size:0.8rem;color:#567;margin-bottom:8px;}
+.metric .value{font-weight:700;color:#0b5ed7;font-size:1.35rem;}
+.filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.filters input,.filters select{padding:8px 12px;border:1px solid #c7d8ef;border-radius:8px;font-size:0.9rem;flex:1;min-width:150px;background:#fff;}
+.search-input{width:100%;max-width:300px;}
+.table-container{overflow-x:auto;max-height:65vh;overflow-y:auto;border:1px solid #d7e9ff;border-radius:10px;}
+table{border-collapse:collapse;width:100%;background:#fff;min-width:1150px;}
+th,td{border-bottom:1px solid #edf4ff;padding:12px;text-align:left;font-size:0.88rem;vertical-align:top;}
+th{position:sticky;top:0;background:#edf5ff;color:#123;font-weight:600;z-index:10;}
+tr:hover{background:#f9fcff;}
+.score-high{color:#28a745;font-weight:700;}
+.score-med{color:#b38600;font-weight:700;}
+.score-low{color:#dc3545;font-weight:700;}
+.tab-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+#status{font-size:0.95rem;min-height:20px;margin-bottom:12px;}
+.status-loading{color:#0b5ed7;}
+.status-error{color:#c30000;}
+.status-success{color:#28a745;}
+.note{font-size:0.92rem;color:#567;line-height:1.6;}
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>Researcher Dashboard</h1>
+  <div class="header">
+    <h1>Admin Dashboard - Scores</h1>
+    <div class="controls">
+      <button onclick="loadLatestData()">Refresh Latest</button>
+      <button class="secondary" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
   <div class="card">
-    Data loaded from Google Sheets.
-    <div id="status">Loading...</div>
+    <div id="status"></div>
+    <div class="summary" id="summary"></div>
   </div>
 
-  <div class="card controls">
-    <button onclick="loadData()">Refresh</button>
-    <button onclick="downloadCsv()">Download CSV</button>
-    <button class="secondary" onclick="logout()">Logout</button>
-  </div>
+  <div class="card">
+    <div class="tab-row">
+      <button id="latestTabBtn" class="active" onclick="showTab('latest')">Latest Records</button>
+      <button id="historyTabBtn" class="ghost" onclick="showTab('history')">History</button>
+    </div>
+    <p class="note">Latest records show the current score for each participant. History shows every saved submission event, including older saves for the same participant.</p>
 
-  <div class="card summary" id="summary"></div>
+    <div id="latestPanel" class="tab-panel active">
+      <div class="filters">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by participant ID..." onkeyup="filterLatestTable()">
+        <select id="filterTopic" onchange="filterLatestTable()">
+          <option value="">All Topics</option>
+        </select>
+      </div>
+      <div class="table-container">
+        <table id="latestTable">
+          <thead>
+            <tr>
+              <th>Participant ID</th>
+              <th>Topic</th>
+              <th>Textbook Score</th>
+              <th>Textbook Time</th>
+              <th>Textbook Stress</th>
+              <th>CalmLearn Score</th>
+              <th>CalmLearn Time</th>
+              <th>CalmLearn Stress</th>
+              <th>Score Improvement</th>
+              <th>Stress Improvement</th>
+              <th>Completed</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
 
-  <div class="card table-wrap">
-    <table id="dataTable">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Participant ID</th>
-          <th>Created</th>
-          <th>Method Order</th>
-          <th>Age</th>
-          <th>Learner Type</th>
-          <th>Baseline Stress</th>
-          <th>Baseline Confidence</th>
-          <th>Textbook Time(s)</th>
-          <th>Textbook Quiz(s)</th>
-          <th>Textbook Score</th>
-          <th>Textbook Post Stress</th>
-          <th>Calm Breathing Delta</th>
-          <th>Calm Read(s)</th>
-          <th>Calm Quiz(s)</th>
-          <th>Calm Score</th>
-          <th>Calm Post Stress</th>
-          <th>Textbook Post Confidence</th>
-          <th>Calm Post Confidence</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div id="historyPanel" class="tab-panel">
+      <div class="filters">
+        <input type="text" id="historySearchInput" class="search-input" placeholder="Search history by participant ID..." onkeyup="filterHistoryTable()">
+        <select id="historyFilterTopic" onchange="filterHistoryTable()">
+          <option value="">All Topics</option>
+        </select>
+      </div>
+      <div class="table-container">
+        <table id="historyTable">
+          <thead>
+            <tr>
+              <th>Saved At</th>
+              <th>Participant ID</th>
+              <th>Submission ID</th>
+              <th>Topic</th>
+              <th>Method Order</th>
+              <th>Textbook Score</th>
+              <th>CalmLearn Score</th>
+              <th>Baseline Stress</th>
+              <th>Baseline Confidence</th>
+              <th>Textbook Stress</th>
+              <th>CalmLearn Stress</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
-<script src="sheets-config.js"></script>
 <script>
 const RESEARCHER_KEY_STORAGE = "researcherKey";
-const researcherKey = sessionStorage.getItem(RESEARCHER_KEY_STORAGE);
-const scriptUrl = (window.CALMLEARN_SHEETS_URL || "").trim();
-
+let researcherKey = sessionStorage.getItem(RESEARCHER_KEY_STORAGE);
 if (!researcherKey) window.location.href = "researcher-login.html";
-if (!scriptUrl) {
-  document.getElementById("status").textContent = "Google Sheets endpoint missing in sheets-config.js.";
-  document.getElementById("status").style.color = "#c30000";
+
+let latestRows = [];
+let historyRows = [];
+
+function updateStatus(message, type = "info") {
+  const el = document.getElementById("status");
+  el.textContent = message;
+  el.className = `status-${type}`;
 }
 
-function asNum(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
+function showTab(tab) {
+  const latestPanel = document.getElementById("latestPanel");
+  const historyPanel = document.getElementById("historyPanel");
+  const latestBtn = document.getElementById("latestTabBtn");
+  const historyBtn = document.getElementById("historyTabBtn");
+
+  const isLatest = tab === "latest";
+  latestPanel.classList.toggle("active", isLatest);
+  historyPanel.classList.toggle("active", !isLatest);
+  latestBtn.classList.toggle("active", isLatest);
+  latestBtn.classList.toggle("ghost", !isLatest);
+  historyBtn.classList.toggle("active", !isLatest);
+  historyBtn.classList.toggle("ghost", isLatest);
+
+  if (!historyRows.length && !isLatest) {
+    loadHistoryData();
+  }
 }
 
-function mean(values) {
-  const nums = values.filter((n) => Number.isFinite(n));
-  if (!nums.length) return "N/A";
-  return (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(2);
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text ?? "";
+  return div.innerHTML;
+}
+
+function formatTime(seconds) {
+  if (seconds === null || seconds === undefined || seconds === "") return "—";
+  const n = Number(seconds);
+  if (!Number.isFinite(n)) return "—";
+  const mins = Math.floor(n / 60);
+  const secs = n % 60;
+  return `${mins}m ${secs}s`;
 }
 
 function scoreText(score, total) {
-  if (score === null || total === null) return "N/A";
+  if (score === null || total === null || !total) return "—";
   return `${score}/${total}`;
 }
 
-function renderSummary(rows) {
-  const textbookScores = rows.map((r) => {
-    const s = asNum(r.textbook_score);
-    const t = asNum(r.textbook_quiz_total);
-    return Number.isFinite(s) && Number.isFinite(t) && t > 0 ? (s / t) * 100 : null;
-  });
-  const calmScores = rows.map((r) => {
-    const s = asNum(r.calm_score);
-    const t = asNum(r.calm_quiz_total);
-    return Number.isFinite(s) && Number.isFinite(t) && t > 0 ? (s / t) * 100 : null;
-  });
-
-  const summary = [
-    { label: "Total Participants", value: rows.length },
-    { label: "Avg Textbook Quiz Time (s)", value: mean(rows.map((r) => asNum(r.textbook_quiz_time))) },
-    { label: "Avg CalmLearn Quiz Time (s)", value: mean(rows.map((r) => asNum(r.calm_quiz_time))) },
-    { label: "Avg Textbook Score (%)", value: mean(textbookScores) },
-    { label: "Avg CalmLearn Score (%)", value: mean(calmScores) }
-  ];
-
-  const container = document.getElementById("summary");
-  container.innerHTML = summary.map((m) => (
-    `<div class="metric"><div class="label">${m.label}</div><div class="value">${m.value}</div></div>`
-  )).join("");
+function percentFromScore(score, total) {
+  if (score === null || total === null || !total) return null;
+  return Math.round((score / total) * 100);
 }
 
-function renderTable(rows) {
-  const tbody = document.querySelector("#dataTable tbody");
-  tbody.innerHTML = rows.map((r) => {
-    const calmDelta = (asNum(r.calm_breathing_pre_stress) ?? 0) - (asNum(r.calm_breathing_post_stress) ?? 0);
-    return `
-      <tr>
-        <td>${r.id ?? ""}</td>
-        <td>${r.participant_id ?? ""}</td>
-        <td>${r.created_at ?? ""}</td>
-        <td>${r.method_order ?? ""}</td>
-        <td>${r.age_range ?? ""}</td>
-        <td>${r.learning_style ?? ""}</td>
-        <td>${r.baseline_stress ?? ""}</td>
-        <td>${r.baseline_confidence ?? ""}</td>
-        <td>${r.textbook_reading_time ?? ""}</td>
-        <td>${r.textbook_quiz_time ?? ""}</td>
-        <td>${scoreText(r.textbook_score, r.textbook_quiz_total)}</td>
-        <td>${r.textbook_post_stress ?? ""}</td>
-        <td>${Number.isFinite(calmDelta) ? calmDelta : ""}</td>
-        <td>${r.calm_reading_time ?? ""}</td>
-        <td>${r.calm_quiz_time ?? ""}</td>
-        <td>${scoreText(r.calm_score, r.calm_quiz_total)}</td>
-        <td>${r.calm_post_stress ?? ""}</td>
-        <td>${r.textbook_post_confidence ?? ""}</td>
-        <td>${r.calm_post_confidence ?? ""}</td>
-      </tr>
+function updateSummary() {
+  const scored = latestRows.filter((r) => r.textbook_score !== null || r.calm_score !== null);
+  const avgTextbook = scored.some((r) => r.textbook_score !== null)
+    ? Math.round(scored.reduce((sum, r) => sum + (percentFromScore(r.textbook_score, r.textbook_quiz_total) || 0), 0) /
+      scored.filter((r) => r.textbook_score !== null).length)
+    : null;
+  const avgCalm = scored.some((r) => r.calm_score !== null)
+    ? Math.round(scored.reduce((sum, r) => sum + (percentFromScore(r.calm_score, r.calm_quiz_total) || 0), 0) /
+      scored.filter((r) => r.calm_score !== null).length)
+    : null;
+  const totalHistory = historyRows.length;
+
+  document.getElementById("summary").innerHTML = `
+    <div class="metric"><div class="label">Latest Participants</div><div class="value">${latestRows.length}</div></div>
+    <div class="metric"><div class="label">History Records</div><div class="value">${totalHistory || "0"}</div></div>
+    <div class="metric"><div class="label">Avg Textbook Score</div><div class="value">${avgTextbook === null ? "N/A" : `${avgTextbook}%`}</div></div>
+    <div class="metric"><div class="label">Avg CalmLearn Score</div><div class="value">${avgCalm === null ? "N/A" : `${avgCalm}%`}</div></div>
+  `;
+}
+
+function populateTopicFilters(rows, selectId) {
+  const topicSelect = document.getElementById(selectId);
+  const currentValue = topicSelect.value;
+  const topics = [...new Set(rows.map((r) => r.topic).filter(Boolean))].sort();
+  topicSelect.innerHTML = '<option value="">All Topics</option>';
+  topics.forEach((topic) => {
+    const opt = document.createElement("option");
+    opt.value = topic;
+    opt.textContent = topic;
+    topicSelect.appendChild(opt);
+  });
+  topicSelect.value = currentValue;
+}
+
+function getLatestFilteredRows() {
+  const searchVal = document.getElementById("searchInput").value.toLowerCase();
+  const topicVal = document.getElementById("filterTopic").value;
+  return latestRows.filter((row) => {
+    const matchesSearch = !searchVal || String(row.participant_id || "").toLowerCase().includes(searchVal);
+    const matchesTopic = !topicVal || row.topic === topicVal;
+    return matchesSearch && matchesTopic;
+  });
+}
+
+function getHistoryFilteredRows() {
+  const searchVal = document.getElementById("historySearchInput").value.toLowerCase();
+  const topicVal = document.getElementById("historyFilterTopic").value;
+  return historyRows.filter((row) => {
+    const matchesSearch = !searchVal || String(row.participant_id || "").toLowerCase().includes(searchVal);
+    const matchesTopic = !topicVal || row.topic === topicVal;
+    return matchesSearch && matchesTopic;
+  });
+}
+
+function renderLatestTable(rows) {
+  const tbody = document.querySelector("#latestTable tbody");
+  tbody.innerHTML = "";
+  rows.forEach((row) => {
+    const textbookPercent = percentFromScore(row.textbook_score, row.textbook_quiz_total);
+    const calmPercent = percentFromScore(row.calm_score, row.calm_quiz_total);
+    const scoreImprovement = (textbookPercent !== null && calmPercent !== null) ? calmPercent - textbookPercent : null;
+    const stressImprovement = (row.baseline_stress !== null && row.calm_post_stress !== null) ? row.baseline_stress - row.calm_post_stress : null;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${escapeHtml(row.participant_id || "N/A")}</strong></td>
+      <td>${escapeHtml(row.topic || "—")}</td>
+      <td>${scoreText(row.textbook_score, row.textbook_quiz_total)}</td>
+      <td>${formatTime(row.textbook_quiz_time)}</td>
+      <td>${row.textbook_post_stress ?? "—"}</td>
+      <td>${scoreText(row.calm_score, row.calm_quiz_total)}</td>
+      <td>${formatTime(row.calm_quiz_time)}</td>
+      <td>${row.calm_post_stress ?? "—"}</td>
+      <td>${scoreImprovement === null ? "—" : `<span class="${scoreImprovement > 0 ? "score-high" : scoreImprovement < 0 ? "score-low" : "score-med"}">${scoreImprovement > 0 ? "+" : ""}${scoreImprovement}%</span>`}</td>
+      <td>${stressImprovement === null ? "—" : `<span class="${stressImprovement > 0 ? "score-high" : stressImprovement < 0 ? "score-low" : "score-med"}">${stressImprovement > 0 ? "+" : ""}${stressImprovement}</span>`}</td>
+      <td>${row.created_at ? new Date(row.created_at).toLocaleString() : "—"}</td>
     `;
-  }).join("");
+    tbody.appendChild(tr);
+  });
 }
 
-async function loadData() {
-  const status = document.getElementById("status");
-  if (!scriptUrl) return;
+function renderHistoryTable(rows) {
+  const tbody = document.querySelector("#historyTable tbody");
+  tbody.innerHTML = "";
+  rows.forEach((row) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row.saved_at ? new Date(row.saved_at).toLocaleString() : "—"}</td>
+      <td><strong>${escapeHtml(row.participant_id || "N/A")}</strong></td>
+      <td>${row.submission_id ?? "—"}</td>
+      <td>${escapeHtml(row.topic || "—")}</td>
+      <td>${escapeHtml(JSON.stringify(row.method_order || []))}</td>
+      <td>${scoreText(row.textbook_score, row.textbook_quiz_total)}</td>
+      <td>${scoreText(row.calm_score, row.calm_quiz_total)}</td>
+      <td>${row.baseline_stress ?? "—"}</td>
+      <td>${row.baseline_confidence ?? "—"}</td>
+      <td>${row.textbook_post_stress ?? "—"}</td>
+      <td>${row.calm_post_stress ?? "—"}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 
-  status.textContent = "Loading...";
+function filterLatestTable() {
+  renderLatestTable(getLatestFilteredRows());
+}
+
+function filterHistoryTable() {
+  renderHistoryTable(getHistoryFilteredRows());
+}
+
+async function loadLatestData() {
   try {
-    const url = `${scriptUrl}?action=list&key=${encodeURIComponent(researcherKey)}`;
-    const response = await fetch(url);
-    if (response.status === 401) {
-      sessionStorage.removeItem(RESEARCHER_KEY_STORAGE);
-      window.location.href = "researcher-login.html";
+    updateStatus("Loading latest data...", "loading");
+    researcherKey = sessionStorage.getItem(RESEARCHER_KEY_STORAGE);
+    const response = await fetch("/api/submissions", {
+      headers: { "x-researcher-key": researcherKey }
+    });
+
+    if (!response.ok) {
+      updateStatus("Failed to load latest records. Please re-login.", "error");
+      setTimeout(() => window.location.href = "researcher-login.html", 2000);
       return;
     }
-    if (!response.ok) throw new Error("Could not fetch submissions");
 
-    const data = await response.json();
-    const rows = data.rows || [];
-
-    renderSummary(rows);
-    renderTable(rows);
-
-    status.textContent = `Loaded ${rows.length} participant record(s).`;
-    status.style.color = "#19733b";
-  } catch (_err) {
-    status.textContent = "Failed to load records. Check Apps Script URL and permissions.";
-    status.style.color = "#c30000";
+    const result = await response.json();
+    latestRows = result.rows || [];
+    populateTopicFilters(latestRows, "filterTopic");
+    renderLatestTable(getLatestFilteredRows());
+    updateSummary();
+    updateStatus(`Loaded ${latestRows.length} latest participant record(s).`, "success");
+  } catch (err) {
+    updateStatus("Error loading latest data: " + err.message, "error");
   }
 }
 
-async function downloadCsv() {
-  if (!scriptUrl) return;
-  const url = `${scriptUrl}?action=csv&key=${encodeURIComponent(researcherKey)}`;
-  const response = await fetch(url);
-  if (response.status === 401) {
-    sessionStorage.removeItem(RESEARCHER_KEY_STORAGE);
-    window.location.href = "researcher-login.html";
-    return;
-  }
-  if (!response.ok) {
-    alert("CSV download failed.");
-    return;
-  }
+async function loadHistoryData() {
+  try {
+    updateStatus("Loading history data...", "loading");
+    researcherKey = sessionStorage.getItem(RESEARCHER_KEY_STORAGE);
+    const response = await fetch("/api/submissions-history", {
+      headers: { "x-researcher-key": researcherKey }
+    });
 
-  const blob = await response.blob();
-  const objectUrl = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = objectUrl;
-  a.download = "calmlearn_submissions.csv";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(objectUrl);
+    if (!response.ok) {
+      updateStatus("Failed to load history records. Please re-login.", "error");
+      setTimeout(() => window.location.href = "researcher-login.html", 2000);
+      return;
+    }
+
+    const result = await response.json();
+    historyRows = result.rows || [];
+    populateTopicFilters(historyRows, "historyFilterTopic");
+    renderHistoryTable(getHistoryFilteredRows());
+    updateSummary();
+    updateStatus(`Loaded ${historyRows.length} history record(s).`, "success");
+  } catch (err) {
+    updateStatus("Error loading history data: " + err.message, "error");
+  }
 }
 
 function logout() {
@@ -214,7 +349,7 @@ function logout() {
   window.location.href = "researcher-login.html";
 }
 
-loadData();
+loadLatestData();
 </script>
 </body>
 </html>
