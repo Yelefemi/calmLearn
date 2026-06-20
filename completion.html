@@ -88,6 +88,19 @@ function isLocalEnvironment() {
   return window.location.protocol === "file:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 }
 
+async function detectBackendMode(scriptUrl) {
+  if (isLocalEnvironment()) return scriptUrl ? "sheets" : "none";
+  try {
+    const response = await fetch("/api/health", { headers: { Accept: "application/json" } });
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
+    if (response.ok && data && data.ok) return "node";
+  } catch {
+    // fall through to sheets
+  }
+  return scriptUrl ? "sheets" : "none";
+}
+
 function renderScoreSummary() {
   const container = document.getElementById("scoreSummary");
   if (!container) return;
@@ -126,7 +139,7 @@ function renderScoreSummary() {
 async function submitParticipantRecord() {
   const statusEl = document.getElementById("saveStatus");
   const scriptUrl = (window.CALMLEARN_SHEETS_URL || "").trim();
-  const useSheets = isLocalEnvironment() && scriptUrl;
+  const backendMode = await detectBackendMode(scriptUrl);
   const payload = {
     action: "submit",
     participant_id: localStorage.getItem("participantId"),
@@ -159,14 +172,6 @@ async function submitParticipantRecord() {
     participant_completed_at: Date.now()
   };
 
-  if (!scriptUrl) {
-    if (isLocalEnvironment()) {
-      statusEl.textContent = "Google Sheets endpoint not configured. Set it in sheets-config.js.";
-      statusEl.style.color = "#c30000";
-      return;
-    }
-  }
-
   if (!payload.participant_id) {
     statusEl.textContent = "Could not save: participant ID missing. Please restart the session.";
     statusEl.style.color = "#c30000";
@@ -174,7 +179,10 @@ async function submitParticipantRecord() {
   }
 
   try {
-    if (useSheets) {
+    if (backendMode === "sheets") {
+      if (!scriptUrl) {
+        throw new Error("Google Sheets endpoint not configured. Set it in sheets-config.js.");
+      }
       const sheetsResponse = await fetch(scriptUrl, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -187,13 +195,15 @@ async function submitParticipantRecord() {
       if (confirmation && confirmation.toLowerCase().includes("error")) {
         throw new Error(confirmation);
       }
-    } else {
+    } else if (backendMode === "node") {
       const apiResponse = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
       if (!apiResponse.ok) throw new Error("API save failed");
+    } else {
+      throw new Error("No backend configured. Set CALMLEARN_SHEETS_URL or deploy the API.");
     }
 
     // Keep a local backup so the session is not lost if a backend deployment is stale.

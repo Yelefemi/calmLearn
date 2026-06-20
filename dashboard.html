@@ -71,13 +71,35 @@ let latestRows = [];
 let historyRows = [];
 let passwordVisible = false;
 const SHEETS_URL = (window.CALMLEARN_SHEETS_URL || "").trim();
+let backendModePromise = null;
 
 function isLocalEnvironment() {
   return window.location.protocol === "file:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 }
 
-function getApiMode() {
-  return isLocalEnvironment() ? "sheets" : "node";
+function getFallbackMode() {
+  return SHEETS_URL ? "sheets" : "node";
+}
+
+async function detectBackendMode() {
+  if (isLocalEnvironment()) return "sheets";
+  if (backendModePromise) return backendModePromise;
+
+  backendModePromise = (async () => {
+    if (!SHEETS_URL) return "node";
+    try {
+      const response = await fetch("/api/health", { headers: { Accept: "application/json" } });
+      const data = await readJsonResponse(response, "Server returned HTML instead of JSON. Start the API or use the Sheets backend.");
+      if (response.ok && data && data.ok) {
+        return "node";
+      }
+    } catch {
+      // Ignore and fall back to Sheets.
+    }
+    return "sheets";
+  })();
+
+  return backendModePromise;
 }
 
 async function readJsonResponse(response, fallbackMessage) {
@@ -364,7 +386,8 @@ function filterHistoryTable() {
 }
 
 async function fetchJSON(url) {
-  if (getApiMode() === "sheets") {
+  const mode = await detectBackendMode();
+  if (mode === "sheets") {
     if (!SHEETS_URL) {
       throw new Error("Google Sheets backend is not configured. Set CALMLEARN_SHEETS_URL in sheets-config.js.");
     }
@@ -379,12 +402,28 @@ async function fetchJSON(url) {
     return data;
   }
 
-  const response = await fetch(url);
-  const data = await readJsonResponse(response, "Server returned HTML instead of JSON. Start the API or use the Sheets backend.");
-  if (!response.ok) {
-    throw new Error(data.error || `Request failed (${response.status})`);
+  try {
+    const response = await fetch(url, { headers: { Accept: "application/json" } });
+    const data = await readJsonResponse(response, "Server returned HTML instead of JSON. Start the API or use the Sheets backend.");
+    if (!response.ok) {
+      throw new Error(data.error || `Request failed (${response.status})`);
+    }
+    return data;
+  } catch (err) {
+    if (SHEETS_URL) {
+      const response = await fetch(`${SHEETS_URL}?action=list&key=${encodeURIComponent(researcherKey)}`);
+      const data = await readJsonResponse(response, "Sheets returned HTML instead of JSON. Redeploy the Apps Script web app.");
+      if (!response.ok) {
+        throw new Error(data.error || `Sheets request failed (${response.status})`);
+      }
+      if (Array.isArray(data.rows)) {
+        data.rows = data.rows.filter((row) => row && row.participant_id);
+      }
+      backendModePromise = Promise.resolve("sheets");
+      return data;
+    }
+    throw err;
   }
-  return data;
 }
 
 async function login() {
