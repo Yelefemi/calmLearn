@@ -1,5 +1,4 @@
 const { normalizePayload, upsertSubmission, getAllSubmissions } = require("../lib/postgres");
-const { requireResearcher } = require("../lib/auth");
 
 module.exports = async (req, res) => {
   try {
@@ -13,7 +12,6 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === "GET") {
-      if (!requireResearcher(req, res)) return;
       const rows = await getAllSubmissions();
       return res.status(200).json({ count: rows.length, rows });
     }

@@ -41,120 +41,53 @@ tr:hover{background:#f9fcff;}
 .status-error{color:#c30000;}
 .status-success{color:#28a745;}
 .note{font-size:0.92rem;color:#567;line-height:1.6;}
+.login-card{max-width:520px;margin:10vh auto 0;}
+.login-field{display:block;width:100%;margin:10px 0 14px;padding:12px 14px;border:1px solid #c7d8ef;border-radius:10px;font-size:1rem;}
+.login-help{color:#567;font-size:0.92rem;line-height:1.6;margin:0 0 14px;}
+.password-wrap{position:relative;}
+.toggle-pass{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  border:none;
+  background:transparent;
+  color:#0b5ed7;
+  cursor:pointer;
+  padding:4px 8px;
+  font-size:.85rem;
+}
 </style>
+<script src="sheets-config.js"></script>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>Admin Dashboard - Scores</h1>
-    <div class="controls">
-      <button onclick="loadLatestData()">Refresh Latest</button>
-      <button class="secondary" onclick="logout()">Logout</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div id="status"></div>
-    <div class="summary" id="summary"></div>
-  </div>
-
-  <div class="card">
-    <div class="tab-row">
-      <button id="latestTabBtn" class="active" onclick="showTab('latest')">Latest Records</button>
-      <button id="historyTabBtn" class="ghost" onclick="showTab('history')">History</button>
-    </div>
-    <p class="note">Latest records show the current score for each participant. History shows every saved submission event, including older saves for the same participant.</p>
-
-    <div id="latestPanel" class="tab-panel active">
-      <div class="filters">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search by participant ID..." onkeyup="filterLatestTable()">
-        <select id="filterTopic" onchange="filterLatestTable()">
-          <option value="">All Topics</option>
-        </select>
-      </div>
-      <div class="table-container">
-        <table id="latestTable">
-          <thead>
-            <tr>
-              <th>Participant ID</th>
-              <th>Topic</th>
-              <th>Textbook Score</th>
-              <th>Textbook Time</th>
-              <th>Textbook Stress</th>
-              <th>CalmLearn Score</th>
-              <th>CalmLearn Time</th>
-              <th>CalmLearn Stress</th>
-              <th>Score Improvement</th>
-              <th>Stress Improvement</th>
-              <th>Completed</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="historyPanel" class="tab-panel">
-      <div class="filters">
-        <input type="text" id="historySearchInput" class="search-input" placeholder="Search history by participant ID..." onkeyup="filterHistoryTable()">
-        <select id="historyFilterTopic" onchange="filterHistoryTable()">
-          <option value="">All Topics</option>
-        </select>
-      </div>
-      <div class="table-container">
-        <table id="historyTable">
-          <thead>
-            <tr>
-              <th>Saved At</th>
-              <th>Participant ID</th>
-              <th>Submission ID</th>
-              <th>Topic</th>
-              <th>Method Order</th>
-              <th>Textbook Score</th>
-              <th>CalmLearn Score</th>
-              <th>Baseline Stress</th>
-              <th>Baseline Confidence</th>
-              <th>Textbook Stress</th>
-              <th>CalmLearn Stress</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="container" id="app"></div>
 
 <script>
 const RESEARCHER_KEY_STORAGE = "researcherKey";
-let researcherKey = sessionStorage.getItem(RESEARCHER_KEY_STORAGE);
-if (!researcherKey) window.location.href = "researcher-login.html";
-
+const RESEARCHER_KEY = "Calmlearn2026";
+let researcherKey = sessionStorage.getItem(RESEARCHER_KEY_STORAGE) || "";
 let latestRows = [];
 let historyRows = [];
+let passwordVisible = false;
+const SHEETS_URL = (window.CALMLEARN_SHEETS_URL || "").trim();
 
-function updateStatus(message, type = "info") {
-  const el = document.getElementById("status");
-  el.textContent = message;
-  el.className = `status-${type}`;
+function isLocalEnvironment() {
+  return window.location.protocol === "file:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 }
 
-function showTab(tab) {
-  const latestPanel = document.getElementById("latestPanel");
-  const historyPanel = document.getElementById("historyPanel");
-  const latestBtn = document.getElementById("latestTabBtn");
-  const historyBtn = document.getElementById("historyTabBtn");
+function getApiMode() {
+  return isLocalEnvironment() ? "sheets" : "node";
+}
 
-  const isLatest = tab === "latest";
-  latestPanel.classList.toggle("active", isLatest);
-  historyPanel.classList.toggle("active", !isLatest);
-  latestBtn.classList.toggle("active", isLatest);
-  latestBtn.classList.toggle("ghost", !isLatest);
-  historyBtn.classList.toggle("active", !isLatest);
-  historyBtn.classList.toggle("ghost", isLatest);
-
-  if (!historyRows.length && !isLatest) {
-    loadHistoryData();
+async function readJsonResponse(response, fallbackMessage) {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    const snippet = text.replace(/\s+/g, " ").slice(0, 140);
+    throw new Error(fallbackMessage || `Expected JSON but got: ${snippet}`);
   }
 }
 
@@ -183,6 +116,145 @@ function percentFromScore(score, total) {
   return Math.round((score / total) * 100);
 }
 
+function renderLogin() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="card login-card">
+      <h1>Researcher Access</h1>
+      <p class="login-help">Enter the researcher passcode to open the dashboard. This protects participant data from general access.</p>
+      <label for="researcherKeyInput" class="note">Researcher passcode</label>
+      <div class="password-wrap">
+        <input id="researcherKeyInput" class="login-field" type="password" autocomplete="current-password" placeholder="Enter passcode">
+        <button type="button" class="toggle-pass" id="togglePassBtn" onclick="togglePassword()">Show</button>
+      </div>
+      <div class="controls">
+        <button type="button" onclick="login()">Access Dashboard</button>
+      </div>
+      <div id="status"></div>
+    </div>
+  `;
+
+  const input = document.getElementById("researcherKeyInput");
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") login();
+  });
+  input.focus();
+}
+
+function togglePassword() {
+  const input = document.getElementById("researcherKeyInput");
+  const button = document.getElementById("togglePassBtn");
+  passwordVisible = !passwordVisible;
+  input.type = passwordVisible ? "text" : "password";
+  button.textContent = passwordVisible ? "Hide" : "Show";
+}
+
+function renderDashboardShell() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="header">
+      <h1>Admin Dashboard - Scores</h1>
+      <div class="controls">
+        <button onclick="loadLatestData()">Refresh Latest</button>
+        <button class="secondary" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="status"></div>
+      <div class="summary" id="summary"></div>
+    </div>
+
+    <div class="card">
+      <div class="tab-row">
+        <button id="latestTabBtn" class="active" onclick="showTab('latest')">Latest Records</button>
+        <button id="historyTabBtn" class="ghost" onclick="showTab('history')">History</button>
+      </div>
+      <p class="note">Latest records show the current score for each participant. History shows every saved submission event, including older saves for the same participant.</p>
+
+      <div id="latestPanel" class="tab-panel active">
+        <div class="filters">
+          <input type="text" id="searchInput" class="search-input" placeholder="Search by participant ID..." onkeyup="filterLatestTable()">
+          <select id="filterTopic" onchange="filterLatestTable()">
+            <option value="">All Topics</option>
+          </select>
+        </div>
+        <div class="table-container">
+          <table id="latestTable">
+            <thead>
+              <tr>
+                <th>Participant ID</th>
+                <th>Topic</th>
+                <th>Textbook Score</th>
+                <th>Textbook Time</th>
+                <th>Textbook Stress</th>
+                <th>CalmLearn Score</th>
+                <th>CalmLearn Time</th>
+                <th>CalmLearn Stress</th>
+                <th>Score Improvement</th>
+                <th>Stress Improvement</th>
+                <th>Completed</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="historyPanel" class="tab-panel">
+        <div class="filters">
+          <input type="text" id="historySearchInput" class="search-input" placeholder="Search history by participant ID..." onkeyup="filterHistoryTable()">
+          <select id="historyFilterTopic" onchange="filterHistoryTable()">
+            <option value="">All Topics</option>
+          </select>
+        </div>
+        <div class="table-container">
+          <table id="historyTable">
+            <thead>
+              <tr>
+                <th>Saved At</th>
+                <th>Participant ID</th>
+                <th>Submission ID</th>
+                <th>Topic</th>
+                <th>Method Order</th>
+                <th>Textbook Score</th>
+                <th>CalmLearn Score</th>
+                <th>Baseline Stress</th>
+                <th>Baseline Confidence</th>
+                <th>Textbook Stress</th>
+                <th>CalmLearn Stress</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updateStatus(message, type = "info") {
+  const el = document.getElementById("status");
+  if (!el) return;
+  el.textContent = message;
+  el.className = `status-${type}`;
+}
+
+function showTab(tab) {
+  const latestPanel = document.getElementById("latestPanel");
+  const historyPanel = document.getElementById("historyPanel");
+  const latestBtn = document.getElementById("latestTabBtn");
+  const historyBtn = document.getElementById("historyTabBtn");
+  const isLatest = tab === "latest";
+  latestPanel.classList.toggle("active", isLatest);
+  historyPanel.classList.toggle("active", !isLatest);
+  latestBtn.classList.toggle("active", isLatest);
+  latestBtn.classList.toggle("ghost", !isLatest);
+  historyBtn.classList.toggle("active", !isLatest);
+  historyBtn.classList.toggle("ghost", isLatest);
+  if (!historyRows.length && !isLatest) loadHistoryData();
+}
+
 function updateSummary() {
   const scored = latestRows.filter((r) => r.textbook_score !== null || r.calm_score !== null);
   const avgTextbook = scored.some((r) => r.textbook_score !== null)
@@ -193,11 +265,9 @@ function updateSummary() {
     ? Math.round(scored.reduce((sum, r) => sum + (percentFromScore(r.calm_score, r.calm_quiz_total) || 0), 0) /
       scored.filter((r) => r.calm_score !== null).length)
     : null;
-  const totalHistory = historyRows.length;
-
   document.getElementById("summary").innerHTML = `
     <div class="metric"><div class="label">Latest Participants</div><div class="value">${latestRows.length}</div></div>
-    <div class="metric"><div class="label">History Records</div><div class="value">${totalHistory || "0"}</div></div>
+    <div class="metric"><div class="label">History Records</div><div class="value">${historyRows.length || "0"}</div></div>
     <div class="metric"><div class="label">Avg Textbook Score</div><div class="value">${avgTextbook === null ? "N/A" : `${avgTextbook}%`}</div></div>
     <div class="metric"><div class="label">Avg CalmLearn Score</div><div class="value">${avgCalm === null ? "N/A" : `${avgCalm}%`}</div></div>
   `;
@@ -245,7 +315,6 @@ function renderLatestTable(rows) {
     const calmPercent = percentFromScore(row.calm_score, row.calm_quiz_total);
     const scoreImprovement = (textbookPercent !== null && calmPercent !== null) ? calmPercent - textbookPercent : null;
     const stressImprovement = (row.baseline_stress !== null && row.calm_post_stress !== null) ? row.baseline_stress - row.calm_post_stress : null;
-
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><strong>${escapeHtml(row.participant_id || "N/A")}</strong></td>
@@ -294,62 +363,118 @@ function filterHistoryTable() {
   renderHistoryTable(getHistoryFilteredRows());
 }
 
+async function fetchJSON(url) {
+  if (getApiMode() === "sheets") {
+    if (!SHEETS_URL) {
+      throw new Error("Google Sheets backend is not configured. Set CALMLEARN_SHEETS_URL in sheets-config.js.");
+    }
+    const response = await fetch(`${SHEETS_URL}?action=list&key=${encodeURIComponent(researcherKey)}`);
+    const data = await readJsonResponse(response, "Sheets returned HTML instead of JSON. Redeploy the Apps Script web app.");
+    if (!response.ok) {
+      throw new Error(data.error || `Sheets request failed (${response.status})`);
+    }
+    if (Array.isArray(data.rows)) {
+      data.rows = data.rows.filter((row) => row && row.participant_id);
+    }
+    return data;
+  }
+
+  const response = await fetch(url);
+  const data = await readJsonResponse(response, "Server returned HTML instead of JSON. Start the API or use the Sheets backend.");
+  if (!response.ok) {
+    throw new Error(data.error || `Request failed (${response.status})`);
+  }
+  return data;
+}
+
+async function login() {
+  const status = document.getElementById("status");
+  const input = document.getElementById("researcherKeyInput");
+  const key = (input.value || "").trim();
+  if (!key) {
+    status.textContent = "Enter the researcher passcode.";
+    status.className = "status-error";
+    return;
+  }
+
+  try {
+    if (key !== RESEARCHER_KEY) {
+      throw new Error("Passcode is incorrect.");
+    }
+    status.textContent = "Opening dashboard...";
+    status.className = "status-loading";
+    sessionStorage.setItem(RESEARCHER_KEY_STORAGE, key);
+    researcherKey = key;
+    renderDashboardShell();
+    await loadLatestData();
+  } catch (err) {
+    status.textContent = err.message;
+    status.className = "status-error";
+  }
+}
+
 async function loadLatestData() {
   try {
     updateStatus("Loading latest data...", "loading");
-    researcherKey = sessionStorage.getItem(RESEARCHER_KEY_STORAGE);
-    const response = await fetch("/api/submissions", {
-      headers: { "x-researcher-key": researcherKey }
-    });
-
-    if (!response.ok) {
-      updateStatus("Failed to load latest records. Please re-login.", "error");
-      setTimeout(() => window.location.href = "researcher-login.html", 2000);
-      return;
+    const result = await fetchJSON("/api/submissions");
+    latestRows = Array.isArray(result.rows) ? result.rows : [];
+    if (!latestRows.length) {
+      const backup = localStorage.getItem("calmlearnLastSavedSubmission");
+      if (backup) {
+        try {
+          latestRows = [JSON.parse(backup)];
+          updateStatus("Loaded local backup for this browser session.", "success");
+        } catch {
+          // ignore malformed local backup
+        }
+      }
     }
-
-    const result = await response.json();
-    latestRows = result.rows || [];
     populateTopicFilters(latestRows, "filterTopic");
     renderLatestTable(getLatestFilteredRows());
     updateSummary();
-    updateStatus(`Loaded ${latestRows.length} latest participant record(s).`, "success");
+    updateStatus(`Loaded ${latestRows.length} latest record(s).`, "success");
   } catch (err) {
-    updateStatus("Error loading latest data: " + err.message, "error");
+    updateStatus(err.message, "error");
   }
 }
 
 async function loadHistoryData() {
   try {
-    updateStatus("Loading history data...", "loading");
-    researcherKey = sessionStorage.getItem(RESEARCHER_KEY_STORAGE);
-    const response = await fetch("/api/submissions-history", {
-      headers: { "x-researcher-key": researcherKey }
-    });
-
-    if (!response.ok) {
-      updateStatus("Failed to load history records. Please re-login.", "error");
-      setTimeout(() => window.location.href = "researcher-login.html", 2000);
-      return;
+    updateStatus("Loading history...", "loading");
+    const result = await fetchJSON("/api/submissions-history");
+    historyRows = Array.isArray(result.rows) ? result.rows : [];
+    if (!historyRows.length) {
+      const backup = localStorage.getItem("calmlearnLastSavedSubmission");
+      if (backup) {
+        try {
+          const parsed = JSON.parse(backup);
+          historyRows = [{ ...parsed, saved_at: new Date().toISOString(), submission_id: "local-backup" }];
+        } catch {
+          // ignore malformed local backup
+        }
+      }
     }
-
-    const result = await response.json();
-    historyRows = result.rows || [];
     populateTopicFilters(historyRows, "historyFilterTopic");
     renderHistoryTable(getHistoryFilteredRows());
     updateSummary();
     updateStatus(`Loaded ${historyRows.length} history record(s).`, "success");
   } catch (err) {
-    updateStatus("Error loading history data: " + err.message, "error");
+    updateStatus(err.message, "error");
   }
 }
 
 function logout() {
   sessionStorage.removeItem(RESEARCHER_KEY_STORAGE);
-  window.location.href = "researcher-login.html";
+  researcherKey = "";
+  renderLogin();
 }
 
-loadLatestData();
+if (researcherKey) {
+  renderDashboardShell();
+  loadLatestData();
+} else {
+  renderLogin();
+}
 </script>
 </body>
 </html>

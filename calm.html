@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CalmLearn | Calm Reset</title>
+<title>CalmLearn | CalmLearn Study Start</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -26,12 +26,12 @@ button.main.enabled{opacity:1;pointer-events:auto;}
 </head>
 <body>
 <nav>
-  <div class="logo">CalmLearn | Calm Track</div>
+<div class="logo">CalmLearn | Calm Study</div>
   <div class="pill" id="roundPill">Round 1 of 2</div>
 </nav>
 
-<h1>Calm Reset Before Learning</h1>
-<p>Rate your stress now, complete 3 slow breathing cycles, then continue.</p>
+<h1>Start The CalmLearn Study</h1>
+<p>Take a short breathing reset, then begin the CalmLearn lesson for the same topic.</p>
 
 <div class="scale" id="preScale">
   <button onclick="selectPre(1)" type="button">1</button>
@@ -58,7 +58,7 @@ button.main.enabled{opacity:1;pointer-events:auto;}
   </div>
 </div>
 
-<button class="main" id="continueBtn" type="button">Continue To CalmLearn Content</button>
+<button class="main" id="continueBtn" type="button">Start CalmLearn Lesson</button>
 
 <script>
 const order = JSON.parse(localStorage.getItem("methodOrder") || "[]");

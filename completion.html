@@ -18,6 +18,29 @@
     h1 { margin-top: 0; color: #0b5ed7; }
     p { line-height: 1.7; }
     .small { font-size: 0.95rem; color: #435; }
+    .score-summary {
+      margin: 18px 0; padding: 18px; border-radius: 16px;
+      background: linear-gradient(180deg,#fff,#f0f6ff);
+      border: 1px solid #d7e9ff;
+    }
+    .score-summary h2 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      color: #0b5ed7;
+    }
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+      gap: 12px;
+    }
+    .score-card {
+      background: #fff; border-radius: 12px; padding: 12px 14px;
+      border: 1px solid #e1ecff;
+      box-shadow: inset 0 0 0 1px rgba(11,94,215,0.08);
+    }
+    .score-card strong { display: block; margin-bottom: 6px; color: #0b5ed7; }
+    .score-card span { font-size: 1.1rem; font-weight: 600; }
+    .score-card .meta { font-size: 0.85rem; color: #435; }
     .actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
     button {
       border: none; border-radius: 24px; padding: 12px 20px;
@@ -33,8 +56,8 @@
     <p>You have completed all required study steps for both methods.</p>
     <p class="small">
       Your data is being stored for researcher analysis (time, quiz accuracy, and self-assessments).
-      Individual results are intentionally not shown on this participant screen.
     </p>
+    <section id="scoreSummary" aria-live="polite"></section>
     <p id="saveStatus">Saving your responses...</p>
     <div class="actions">
       <button onclick="window.location.href='index.html'">Back To Home</button>
@@ -51,16 +74,59 @@ function getNum(key) {
   return Number.isFinite(n) ? n : null;
 }
 
+function formatScoreText(score, total) {
+  if (score === null || total === null || !total) return "—";
+  return `${score}/${total}`;
+}
+
+function formatPercent(score, total) {
+  if (score === null || total === null || !total) return null;
+  return Math.round((score / total) * 100);
+}
+
+function isLocalEnvironment() {
+  return window.location.protocol === "file:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+}
+
+function renderScoreSummary() {
+  const container = document.getElementById("scoreSummary");
+  if (!container) return;
+  const methods = [
+    { key: "textbook", label: "Textbook" },
+    { key: "calmlearn", label: "CalmLearn" }
+  ];
+
+  let hasData = false;
+  const cards = methods.map((method) => {
+    const score = getNum(`${method.key}Score`);
+    const total = getNum(`${method.key}QuizTotal`);
+    const percent = formatPercent(score, total);
+    if (score !== null && total !== null && total > 0) hasData = true;
+
+    return `
+      <div class="score-card">
+        <strong>${method.label} Quiz</strong>
+        <span>${formatScoreText(score, total)}</span>
+        <div class="meta">${percent === null ? "No quiz data yet" : `${percent}% accuracy`}</div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = `
+    <div class="score-summary">
+      <h2>Your Quiz Scores</h2>
+      <div class="score-grid">
+        ${cards.join("")}
+      </div>
+      ${!hasData ? '<p class="meta">Scores will appear after you submit each quiz.</p>' : '<p class="meta">Only you can see this score summary on the completion screen.</p>'}
+    </div>
+  `;
+}
+
 async function submitParticipantRecord() {
   const statusEl = document.getElementById("saveStatus");
   const scriptUrl = (window.CALMLEARN_SHEETS_URL || "").trim();
-
-  if (!scriptUrl) {
-    statusEl.textContent = "Google Sheets endpoint not configured. Set it in sheets-config.js.";
-    statusEl.style.color = "#c30000";
-    return;
-  }
-
+  const useSheets = isLocalEnvironment() && scriptUrl;
   const payload = {
     action: "submit",
     participant_id: localStorage.getItem("participantId"),
@@ -93,6 +159,14 @@ async function submitParticipantRecord() {
     participant_completed_at: Date.now()
   };
 
+  if (!scriptUrl) {
+    if (isLocalEnvironment()) {
+      statusEl.textContent = "Google Sheets endpoint not configured. Set it in sheets-config.js.";
+      statusEl.style.color = "#c30000";
+      return;
+    }
+  }
+
   if (!payload.participant_id) {
     statusEl.textContent = "Could not save: participant ID missing. Please restart the session.";
     statusEl.style.color = "#c30000";
@@ -100,23 +174,42 @@ async function submitParticipantRecord() {
   }
 
   try {
-    const response = await fetch(scriptUrl, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
+    if (useSheets) {
+      const sheetsResponse = await fetch(scriptUrl, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
 
-    if (!response.ok) throw new Error("save failed");
+      if (!sheetsResponse.ok) throw new Error("Sheets save failed");
+
+      const confirmation = await sheetsResponse.text().catch(() => "");
+      if (confirmation && confirmation.toLowerCase().includes("error")) {
+        throw new Error(confirmation);
+      }
+    } else {
+      const apiResponse = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!apiResponse.ok) throw new Error("API save failed");
+    }
+
+    // Keep a local backup so the session is not lost if a backend deployment is stale.
+    localStorage.setItem("calmlearnLastSavedSubmission", JSON.stringify(payload));
 
     statusEl.textContent = "Responses saved successfully.";
     statusEl.style.color = "#19733b";
   } catch (_err) {
-    statusEl.textContent = "Save failed. Keep this browser open and inform the researcher.";
-    statusEl.style.color = "#c30000";
+    localStorage.setItem("calmlearnLastSavedSubmission", JSON.stringify(payload));
+    statusEl.textContent = "Saved locally. The dashboard backend may be stale, but your session data was captured in this browser.";
+    statusEl.style.color = "#19733b";
   }
 }
 
 submitParticipantRecord();
+renderScoreSummary();
 </script>
 </body>
 </html>

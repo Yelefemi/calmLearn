@@ -14,65 +14,71 @@ input{width:100%;padding:10px;border:1px solid #c7d8ef;border-radius:10px;margin
 button{border:none;border-radius:22px;padding:10px 16px;background:#0b5ed7;color:#fff;cursor:pointer;}
 #status{margin-top:10px;font-size:.95rem;min-height:20px;}
 .small{font-size:.85rem;color:#567;line-height:1.5;}
+.password-wrap{position:relative;}
+.toggle-pass{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  border:none;
+  background:transparent;
+  color:#0b5ed7;
+  cursor:pointer;
+  padding:4px 8px;
+  font-size:.85rem;
+}
 </style>
+<script src="sheets-config.js"></script>
 </head>
 <body>
   <div class="card">
     <h1>Researcher Access</h1>
-    <p class="small">Enter the researcher key to view participant records.</p>
-    <label for="keyInput">Researcher Key</label>
-    <input id="keyInput" type="password" value="Calmlearn2026" autocomplete="current-password" />
-    <button type="button" onclick="login()">Login</button>
+    <p class="small">Enter the private researcher passcode to access the admin dashboard.</p>
+    <label for="researcherKey">Passcode</label>
+    <div class="password-wrap">
+      <input id="researcherKey" type="password" autocomplete="current-password" placeholder="Enter passcode">
+      <button type="button" class="toggle-pass" id="togglePassBtn" onclick="togglePassword()">Show</button>
+    </div>
+    <button type="button" onclick="login()">Access Dashboard</button>
     <div id="status"></div>
   </div>
 
-<script src="sheets-config.js"></script>
 <script>
 const RESEARCHER_KEY_STORAGE = "researcherKey";
+const RESEARCHER_KEY = "Calmlearn2026";
+let passwordVisible = false;
 
 async function login() {
   const status = document.getElementById("status");
-  const key = document.getElementById("keyInput").value.trim();
-  const scriptUrl = (window.CALMLEARN_SHEETS_URL || "").trim();
-
-  if (!scriptUrl) {
-    status.textContent = "Google Sheets endpoint not configured in sheets-config.js.";
-    status.style.color = "#c30000";
-    return;
-  }
+  const input = document.getElementById("researcherKey");
+  const key = (input.value || "").trim();
 
   if (!key) {
-    status.textContent = "Please enter researcher key.";
+    status.textContent = "Enter the researcher passcode.";
     status.style.color = "#c30000";
     return;
   }
 
-  status.textContent = "Verifying...";
-  status.style.color = "#456";
-
   try {
-    const verifyUrl = `${scriptUrl}?action=verify&key=${encodeURIComponent(key)}`;
-    const response = await fetch(verifyUrl, { method: "GET" });
-
-    if (!response.ok) {
-      status.textContent = "Invalid researcher key.";
-      status.style.color = "#c30000";
-      return;
+    if (key !== RESEARCHER_KEY) {
+      throw new Error("Passcode is incorrect.");
     }
-
-    const data = await response.json().catch(() => ({}));
-    if (!data.ok) {
-      status.textContent = "Invalid researcher key.";
-      status.style.color = "#c30000";
-      return;
-    }
-
+    status.textContent = "Opening dashboard...";
+    status.style.color = "#456";
     sessionStorage.setItem(RESEARCHER_KEY_STORAGE, key);
     window.location.href = "dashboard.html";
-  } catch (_err) {
-    status.textContent = "Could not verify. Confirm script URL and deployment access.";
+  } catch (err) {
+    status.textContent = err.message;
     status.style.color = "#c30000";
   }
+}
+
+function togglePassword() {
+  const input = document.getElementById("researcherKey");
+  const button = document.getElementById("togglePassBtn");
+  passwordVisible = !passwordVisible;
+  input.type = passwordVisible ? "text" : "password";
+  button.textContent = passwordVisible ? "Hide" : "Show";
 }
 
 window.addEventListener("keydown", (e) => {

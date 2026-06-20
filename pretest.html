@@ -292,12 +292,12 @@ document.getElementById("startBtn").onclick = function () {
   const participantId = `P-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
   localStorage.setItem("participantId", participantId);
 
-  const methodOrder = Math.random() < 0.5 ? ["textbook", "calmlearn"] : ["calmlearn", "textbook"];
+  const methodOrder = ["textbook", "calmlearn"];
   localStorage.setItem("methodOrder", JSON.stringify(methodOrder));
   localStorage.setItem("currentMethodIndex", "0");
   localStorage.setItem("currentMethod", methodOrder[0]);
 
-  window.location.href = methodOrder[0] === "textbook" ? "textbook.html" : "calm.html";
+  window.location.href = "textbook.html";
 };
 
 fillAgeGroups();

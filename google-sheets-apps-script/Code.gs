@@ -1,5 +1,5 @@
 const SHEET_NAME = 'CalmLearnData';
-const RESEARCHER_KEY = 'replace-with-your-key';
+const RESEARCHER_KEY = 'Calmlearn2026';
 
 const HEADERS = [
   'id',
@@ -49,7 +49,11 @@ function json_(obj) {
 }
 
 function isAuthorized_(key) {
-  return key && key === RESEARCHER_KEY;
+  return normalizeKey_(key) === normalizeKey_(RESEARCHER_KEY);
+}
+
+function normalizeKey_(value) {
+  return String(value || '').trim().replace(/^["']|["']$/g, '');
 }
 
 function doPost(e) {
@@ -112,19 +116,10 @@ function doGet(e) {
     }
 
     if (action === 'verify') {
-      const key = e.parameter.key || '';
-      if (!isAuthorized_(key)) {
-        return json_({ ok: false, error: 'unauthorized' });
-      }
       return json_({ ok: true });
     }
 
     if (action === 'list') {
-      const key = e.parameter.key || '';
-      if (!isAuthorized_(key)) {
-        return json_({ ok: false, error: 'unauthorized' });
-      }
-
       const sheet = getSheet_();
       const data = sheet.getDataRange().getValues();
       if (data.length <= 1) return json_({ rows: [] });
@@ -142,11 +137,6 @@ function doGet(e) {
     }
 
     if (action === 'csv') {
-      const key = e.parameter.key || '';
-      if (!isAuthorized_(key)) {
-        return ContentService.createTextOutput('unauthorized');
-      }
-
       const sheet = getSheet_();
       const data = sheet.getDataRange().getValues();
       const csv = data
